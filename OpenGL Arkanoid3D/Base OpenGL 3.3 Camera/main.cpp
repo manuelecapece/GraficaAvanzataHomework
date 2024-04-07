@@ -18,7 +18,6 @@
 // settings
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 1200;
-bool exitGame = false;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -68,37 +67,37 @@ float cube_mesh[] = {
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
-int mapCorner[14][14] = { {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						  {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-						  {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-						  {7,7,7,7,7,7,7,7,7,7,7,7,7,7 } };
+int mapCorner[14][15] = { {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						  {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+						  {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+						  {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 } };
 
-int mapPavimento[14][14] = { {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7 } };
+int mapPavimento[14][15] = { {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 } };
 
-int mapBox[10][10] = { {6,5,4,3,2,1,0,0,0,0 },
+int mapBox[10][10] = { {0,0,0,0,0,0,0,0,0,0 },
 					   {6,5,4,3,2,1,0,0,0,0 },
 					   {6,5,4,3,2,1,0,0,0,0 },
 					   {6,5,4,3,2,1,0,0,0,0 },
@@ -107,16 +106,16 @@ int mapBox[10][10] = { {6,5,4,3,2,1,0,0,0,0 },
 					   {6,5,4,3,2,1,0,0,0,0 },
 					   {6,5,4,3,2,1,0,0,0,0 },
 					   {6,5,4,3,2,1,0,0,0,0 },
-					   {6,5,4,3,2,1,0,0,0,0 }, };
+					   {0,0,0,0,0,0,0,0,0,0 }, };
 
-//int mapBox[10][10] = { {0,0,0,0,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,0,0,0,0,0 },
+//int mapBox[10][10] = { {0,0,0,1,0,0,0,0,0,0 },
+//					   {0,0,0,0,0,0,1,0,0,0 },
+//					   {0,0,0,0,1,0,0,0,0,0 },
+//					   {0,0,0,1,0,0,0,0,0,0 },
+//					   {0,0,0,0,0,1,0,0,0,0 },
+//					   {0,0,0,0,0,0,1,0,0,0 },
+//					   {0,0,0,0,1,0,0,0,0,0 },
+//					   {0,0,0,0,0,1,0,0,0,0 },
 //					   {0,0,0,0,0,0,0,0,0,0 },
 //					   {0,0,0,0,0,0,0,0,0,0 }, };
 
@@ -132,7 +131,7 @@ const glm::vec3 colors[8] = {	{ 1.0, 1.0, 1.0 },
 											};
 
 
-glm::vec3 cameraPos(-3.5, 15.0, 15.0);  // Posizione camera
+glm::vec3 cameraPos(-3.5, 12.5, 12.5);  // Posizione camera
 glm::vec3 cameraAt(-3.5, 0.0, -5.0);	// Punto in cui "guarda" la camera
 glm::vec3 cameraUp(0.0, 1.0, 0.0);		// Vettore up...la camera è sempre parallela al piano
 glm::vec3 cameraDir(0.0, 0.0, -0.1);	// Direzione dello sguardo
@@ -141,26 +140,38 @@ glm::vec3 cameraSide(1.0, 0.0, 0.0);	// Direzione spostamento laterale
 int cubiEliminati = 0;
 
 //Proprietà palla
-glm::vec3 pallaPos(-3.4, 0.0, 2.0); // Posizione palla
+glm::vec3 pallaPos(-3.4, 0.3, 2.2); // Posizione palla
 glm::vec3 pallaAt(0.0, 0.0, 0.0); // Punto in cui è diretta la palla
 glm::vec3 pallaUp(0.0, 1.0, 0.0); // Vettore up...la palla è sempre parallela al piano
-const float lunghezzaPalla = 0.5f;
-const float larghezzaPalla = 0.5f;
-const float altezzaPalla = 0.5f;
-float speedPalla = 5; // velocità della sfera
+const float lunghezzaPalla = 0.3f;
+const float larghezzaPalla = 0.3f;
+const float altezzaPalla = 0.3f;
+float speedPalla = 7; // velocità della sfera
 float translateSpeedPalla;
 
 //Proprietà piattaforma
-glm::vec3 piattaformaPos(-3.4, 0.0, 3.2);
+glm::vec3 piattaformaPos(-3.4, 0.0, 3.7);
 float translateRight = 0;
 float translateLeft = 0;
 float limX_pos = 1.3386;
 float limX_neg = -8.34348;
-const float speedPiattaforma = 10;  // velocità della piattaforma
+float speedPiattaforma = 5;  // velocità della piattaforma
 const float lunghezzaPiattaforma = 2.0f;
 const float larghezzaPiattaforma = 0.4f;
 const float altezzaPiattaforma = 1.0f;
 float translateSpeedPiattaforma;
+
+//Proprietà cubi bordo,pavimento 
+float dimCubo = 1.0;
+
+//Proprietà mattoni
+//const float lunghezzaMattone = 1.0f;
+//const float larghezzaMattone = 1.0f;
+//const float altezzaMattone   = 1.0f;
+
+const float lunghezzaMattone = 1.0f;
+const float larghezzaMattone = 0.5f;
+const float altezzaMattone = 0.5f;
 
 //Timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -170,12 +181,14 @@ float lastFrame = 0.0f;
 bool moveLeft = false;
 bool moveRight = false;
 bool lanciaPalla = false;
+bool stopLancio = false;
+bool exitGame = false;
 
 unsigned int VBO, VAO;
 unsigned int texture_piattaforma;
 unsigned int texture_bordo;
 unsigned int texture_pavimento;
-unsigned int texture_cubi;
+unsigned int texture_mattoni;
 unsigned int texture_palla;
 unsigned int texture_msgWin;
 unsigned int texture_msgLost;
@@ -187,7 +200,7 @@ unsigned int fps = 0;
 Shader *myShader;
 Shader *pallaShader;
 Shader *piattaformaShader;
-Shader *cubiShader;
+Shader *mattoniShader;
 Shader *bordoShader;
 
 float random_x;
@@ -261,10 +274,12 @@ void idle()
 	}
 
 	//Inizia il movimento della  palla
-	if (lanciaPalla)
+	if (lanciaPalla && !stopLancio)
 	{
 		pallaAt = glm::vec3(random_x , 0.0f, -10.0f);
+		//pallaAt = glm::vec3(-10.0f, 0.0f, -10.0f);
 		pallaAt = glm::normalize(pallaAt);
+		stopLancio = true;
 	}
 
 }
@@ -297,87 +312,121 @@ float generaNumeroCasualeStart(float estremoInferiore, float estremoSuperiore) {
 }
 
 glm::vec3 getNormaleCuboBordo(int i, int j) {
-	std::cout << "indice riga cubo bordo : "<<i << std::endl;
-	std::cout << "indice colonna cubo bordo : " << j << std::endl;
 	//Lato bordo SX
 	if (i == 0 && j < 14) {
-		std::cout << "Hit lato SX " << std::endl;
 		glm::vec3 normale = glm::vec3(1.0f, 0.0f, 0.0f);
 		return normale;
 	}
 	//Lato bordo DX
 	if (i == 13 && j < 14) {
-		std::cout << "Hit lato DX " << std::endl;
 		glm::vec3 normale = glm::vec3(-1.0f, 0.0f, 0.0f);
 		return normale;
 	}
 	//Lato superiore
 	if (1<=i<14 && j == 0) {
-		std::cout << "Hit lato superiore "<<std::endl;
 		glm::vec3 normale = glm::vec3(0.0f, 0.0f, -1.0f);
 		return normale;
 	}
 	return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-glm::vec3 getNormaleCuboCentrale(float x_cube,float z_cube) {
+glm::vec3 getNormaleMattone(float x_cube,float z_cube) {
+
+	std::cout << "pallaAt_x " << pallaAt.x << std::endl;
+	std::cout << "pallaAt_z " << pallaAt.z << std::endl;
+
+	std::cout << "posPalla_x " << pallaPos.x << std::endl;
+	std::cout << "posPalla_z " << pallaPos.z << std::endl;
+
+	std::cout << "x_cube "   << x_cube << std::endl;
+	std::cout << "z_cube "   << z_cube << std::endl;
+
+	float deltaPosX = abs(x_cube - pallaPos.x);
+	float deltaPosZ = abs(z_cube - pallaPos.z);
+	float rangeCollisionX = (lunghezzaPalla + lunghezzaMattone) / 2;
+	float rangeCollisionZ = (larghezzaPalla + larghezzaMattone) / 2;
+	float x0_cube = x_cube - (lunghezzaMattone / 2 + lunghezzaPalla / 2 - 0.1);
+	float x1_cube = x_cube + (lunghezzaMattone / 2 + lunghezzaPalla / 2 - 0.1);
+	float z0_cube = z_cube - (larghezzaMattone / 2 + larghezzaPalla / 2 - 0.1);
+	float z1_cube = z_cube + (larghezzaMattone / 2 + larghezzaPalla / 2 - 0.1);
 
 	//La palla colpisce la faccia inferiore
-	if (pallaAt.z < 0 && abs(x_cube - pallaPos.x) <= 1.0) {
-		std::cout << "Hit face down " << std::endl;
+	if (pallaAt.z < 0 && deltaPosX <= rangeCollisionX && pallaPos.x > x0_cube && pallaPos.x < x1_cube) {
+		//speedPalla = 0;
+		std::cout << "Hit face DOWN " << std::endl;
 		glm::vec3 normale = glm::vec3(0.0f, 0.0f, -1.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia superiore
-	if (pallaAt.z > 0 && abs(x_cube - pallaPos.x) <= 1.0) {
-		std::cout << "Hit face up " << std::endl;
+	else if (pallaAt.z > 0 && deltaPosX <= rangeCollisionX && pallaPos.x > x0_cube && pallaPos.x < x1_cube) {
+		//speedPalla = 0;
+		std::cout << "Hit face UP " << std::endl;
 		glm::vec3 normale = glm::vec3(0.0f, 0.0f, 1.0f);
 		return normale;
 	}
-	//La palla colpisce la faccia destra
-	if (pallaAt.x < 0 && abs(z_cube - pallaPos.z) <= 1.0) {
-		std::cout << "Hit face dx " << std::endl;
+	//La palla colpisce la faccia dx
+	else if (pallaAt.x < 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_cube && pallaPos.z < z1_cube) {
+		//speedPalla = 0;
+		std::cout << "Hit face DX " << std::endl;
 		glm::vec3 normale = glm::vec3(1.0f, 0.0f, 0.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia sx
-	if (pallaAt.x > 0 && abs(z_cube - pallaPos.z) <= 1.0) {
-		std::cout << "Hit face sx " << std::endl;
+	else if (pallaAt.x > 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_cube && pallaPos.z < z1_cube) {
+		//speedPalla = 0;
+		std::cout << "Hit face SX " << std::endl;
 		glm::vec3 normale = glm::vec3(-1.0f, 0.0f, 0.0f);
 		return normale;
 	}
-
+	//La palla colpisce lo spigolo
+	else {
+		std::cout << "Hit face SPIGOLO " << std::endl;
+		glm::vec3 normale = glm::vec3(-1.0f, 0.0f, 0.0f);
+		return normale;
+	}
+	//TODO gestire il caso in cui la palla elimina due cubi contemporaneamente
 	return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 glm::vec3 getNormalePiattaforma() {
 
+	float deltaPosX = abs(piattaformaPos.x - pallaPos.x);
+	float deltaPosZ = abs(piattaformaPos.z - pallaPos.z);
+	float rangeCollisionX = (larghezzaPalla + lunghezzaPiattaforma) / 2;
+	float rangeCollisionZ = (larghezzaPalla + larghezzaPiattaforma) / 2;
+	float x0_piattaforma = piattaformaPos.x - (lunghezzaPiattaforma / 2 + larghezzaPalla / 2);
+	float x1_piattaforma = piattaformaPos.x + (lunghezzaPiattaforma / 2 + larghezzaPalla / 2);
+	float z0_piattaforma = piattaformaPos.z - (larghezzaPiattaforma / 2 + larghezzaPalla / 2);
+	float z1_piattaforma = piattaformaPos.z + (larghezzaPiattaforma / 2 + larghezzaPalla / 2);
+
 	//La palla colpisce la faccia superiore
-	if (pallaAt.z > 0 && abs(piattaformaPos.x - pallaPos.x) <= (lunghezzaPiattaforma + lunghezzaPiattaforma)) {
-		std::cout << "Hit face platform up " << std::endl;
+	if (pallaAt.z > 0 && deltaPosX <= rangeCollisionX && pallaPos.x > x0_piattaforma && pallaPos.x < x1_piattaforma) {
+		std::cout << "Hit face PLATFORM UP " << std::endl;
 		glm::vec3 normale = glm::vec3(0.0f, 0.0f, 1.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia destra
-	if (pallaPos.x > piattaformaPos.x && abs(piattaformaPos.z - pallaPos.z) <= (larghezzaPiattaforma + larghezzaPalla)) {
-		std::cout << "Hit face platform dx " << std::endl;
-		glm::vec3 normale = glm::vec3(1.0f, 0.0f, 1.0f);
+	else if (pallaAt.x < 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_piattaforma && pallaPos.z < z1_piattaforma) {
+		std::cout << "Hit face PLATFORM DX " << std::endl;
+		glm::vec3 normale = glm::vec3(1.0f, 0.0f, 0.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia sx
-	if (pallaPos.x <  piattaformaPos.x > 0 && abs(piattaformaPos.z - pallaPos.z) <= (larghezzaPiattaforma + larghezzaPalla)) {
-		std::cout << "Hit face platform sx " << std::endl;
-		glm::vec3 normale = glm::vec3(-1.0f, 0.0f, -1.0f);
+	else if (pallaAt.x > 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_piattaforma && pallaPos.z < z1_piattaforma) {
+		std::cout << "Hit face PLATFORM SX " << std::endl;
+		glm::vec3 normale = glm::vec3(-1.0f, 0.0f, 1.0f);
 		return normale;
 	}
-
+	//TODO comportamento non corretto quando la palla colpisce le facce laterali della piattaforma
 	return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 
 void render(glm::mat4 projection)
 {
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+	//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 	myShader->use();
 	myShader->setMat4("projection", projection);
@@ -422,23 +471,24 @@ void render(glm::mat4 projection)
 	glBindTexture(GL_TEXTURE_2D, texture_bordo);
 	for (int i = 0; i < 14; i++)
 	{
-		for (int j = 0; j < 14; j++)
+		for (int j = 0; j < 15; j++)
 		{
 			if (mapCorner[i][j] != 0)
 			{
 				bordoShader->setVec3("colorcube", colors[mapCorner[i][j]]);
 
-				/* Ogni cubo del bordo dista 1.0 unità dai vicini */
-				float x = -10 + i * 1.0;
-				float z = -10 + j * 1.0;
+				/* Ogni cubo del bordo dista 0 unità dai vicini */
+				float x = -10 + i;
+				float z = -10 + j;
 
 				glm::mat4 bordo = glm::mat4(1.0f);	//identity matrix
 				bordo = glm::translate(bordo, glm::vec3(x, 0.0f, z));
+				bordo = glm::scale(bordo, glm::vec3(dimCubo, dimCubo, dimCubo));
 				bordoShader->setMat4("model", bordo);
 
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 
-				if (abs(x - pallaPos.x) <= 1.0 && abs(z - pallaPos.z) <= 1.0) {
+				if (abs(x - pallaPos.x) <= dimCubo && abs(z - pallaPos.z) <= dimCubo) {
 
 					glm::vec3 normale = getNormaleCuboBordo(i,j);
 					
@@ -455,7 +505,7 @@ void render(glm::mat4 projection)
 	glBindTexture(GL_TEXTURE_2D, texture_pavimento);
 	for (int i = 0; i < 14; i++)
 	{
-		for (int j = 0; j < 14; j++)
+		for (int j = 0; j < 15; j++)
 		{
 			if (mapPavimento[i][j] != 0)
 			{
@@ -467,6 +517,7 @@ void render(glm::mat4 projection)
 
 				glm::mat4 pavimento = glm::mat4(1.0f);	//identity matrix
 				pavimento = glm::translate(pavimento, glm::vec3(x, -1.0f, z));
+				pavimento = glm::scale(pavimento, glm::vec3(dimCubo, dimCubo, dimCubo));
 				bordoShader->setMat4("model", pavimento);
 
 				glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -475,39 +526,43 @@ void render(glm::mat4 projection)
 		}
 	}
 
-	//Disegno i cubi da eliminare
-	cubiShader->use();
-	cubiShader->setMat4("projection", projection);
-	cubiShader->setMat4("view", view);
-	cubiShader->setInt("myTexture1", 0);
+	//Disegno i mattoni da eliminare
+	mattoniShader->use();
+	mattoniShader->setMat4("projection", projection);
+	mattoniShader->setMat4("view", view);
+	mattoniShader->setInt("myTexture1", 0);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture_cubi);
+	glBindTexture(GL_TEXTURE_2D, texture_mattoni);
 	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 10; j++)
 		{
 			if (mapBox[i][j] != 0)
 			{
-				cubiShader->setVec3("colorcube", colors[mapBox[i][j]]);
+				mattoniShader->setVec3("colorcube", colors[mapBox[i][j]]);
 
-				/* Ogni cubo dista 1.15 unità dai vicini */
-				float x = -8.6 + i * 1.15;
-				float z = -8.6 + j * 1.15;
+				/* Ogni cubo dista 1.1 unità dai vicini */
+				float x = -8.2 + i * 1.05;
+				float z = -6.0 + j * 1.05;
+				float y =  0.5;
 
 				glm::mat4 model = glm::mat4(1.0f);	//identity matrix
-				model = glm::translate(model, glm::vec3(x, 0.0f, z));
-				cubiShader->setMat4("model", model);
+				model = glm::translate(model, glm::vec3(x, y, z));
+				model = glm::scale(model, glm::vec3(lunghezzaMattone, altezzaMattone, larghezzaMattone));
+				mattoniShader->setMat4("model", model);
 
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 
-				if ( abs(x - pallaPos.x) <= 0.5 && abs(z - pallaPos.z) <= 0.5 ) {
+				float rangeCollision = (larghezzaPalla + lunghezzaMattone) / 2;
+
+				if ( abs(x - pallaPos.x) <= rangeCollision && abs(z - pallaPos.z) <= rangeCollision) {
 
 					mapBox[i][j] = 0;
 					cubiEliminati = cubiEliminati++;
 
-					float random = generaNumeroCasuale(-0.1f, 0.1f);
+					float random = generaNumeroCasuale(-0.25f, 0.25f);
 
-					glm::vec3 normale = getNormaleCuboCentrale(x,z);
+					glm::vec3 normale = getNormaleMattone(x,z);
 
 					pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
 					pallaAt = glm::vec3(pallaAt.x + random, pallaAt.y, pallaAt.z + random);
@@ -522,7 +577,8 @@ void render(glm::mat4 projection)
 	}
 
 	//Mesaggio hai perso se la pallina supera la piattaforma
-	if (pallaPos.z > piattaformaPos.z + 0.5) {
+	if (pallaPos.z > piattaformaPos.z + 2.0f) {
+		speedPalla = 0;
 		//Sposto la camera
 		cameraPos = glm::vec3(0.0f, 20.0f, 1.8f);  // Posizione camera
 		cameraAt = glm::vec3(0.0f, 20.0f, -1.0f);	// Punto in cui "guarda" la camera
@@ -537,12 +593,11 @@ void render(glm::mat4 projection)
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture_msgLost);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		//exitGame = true;
 	}
 
 	//Mesaggio hai vinto se non sono rimasti cubi
-	if (cubiEliminati == 60) {
-		pallaPos = glm::vec3(0.0f, 0.0f, 0.0f);
+	if (cubiEliminati == 8*6) {
+		speedPalla = 0;
 		//Sposto la camera
 		cameraPos = glm::vec3(0.0f, 20.0f, 1.8f);  // Posizione camera
 		cameraAt = glm::vec3(0.0f, 20.0f, -1.0f);	// Punto in cui "guarda" la camera
@@ -557,40 +612,23 @@ void render(glm::mat4 projection)
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture_msgWin);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		//exitGame = true;
 	}
 
+	float deltaPosX = abs(piattaformaPos.x - pallaPos.x);
+	float rangeCollisionX = (lunghezzaPalla + lunghezzaPiattaforma) / 2;
+	float deltaPosZ = abs(piattaformaPos.z - pallaPos.z);
+	float rangeCollisionZ = (larghezzaPalla + larghezzaPiattaforma) / 2;
+
 	//Inverto la direzione se la palla colpisce la piattaforma
-	if (abs(piattaformaPos.x - pallaPos.x) <= (lunghezzaPiattaforma+lunghezzaPalla)/2 && abs(piattaformaPos.z - pallaPos.z) <= (larghezzaPiattaforma+larghezzaPalla) / 2) {
+	if (deltaPosX <= rangeCollisionX && deltaPosZ <= rangeCollisionZ) {
+
+		float random = generaNumeroCasuale(-0.25f, 0.25f);
 
 		glm::vec3 normale = getNormalePiattaforma();
-
-		if (normale.z == 1.0f) {
-			if (abs(piattaformaPos.x - pallaPos.x) < (lunghezzaPiattaforma + lunghezzaPalla) / 4) {
-
-				pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
-				pallaAt = glm::normalize(pallaAt);
-				pallaPos = pallaPos + (translateSpeedPalla)*pallaAt;
-			}
-			else if (pallaPos.x > piattaformaPos.x + (lunghezzaPiattaforma + lunghezzaPalla) / 4) {
-
-				normale = glm::vec3(normale.x - 0.3, normale.y, normale.z);
-				pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
-				pallaAt = glm::normalize(pallaAt);
-				pallaPos = pallaPos + (translateSpeedPalla)*pallaAt;
-			}
-			else if (pallaPos.x < piattaformaPos.x - (lunghezzaPiattaforma + lunghezzaPalla) / 4) {
-
-				normale = glm::vec3(normale.x + 0.3, normale.y, normale.z);
-				pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
-				pallaAt = glm::normalize(pallaAt);
-				pallaPos = pallaPos + (translateSpeedPalla)*pallaAt;
-			}
-		}else{
-			pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
-			pallaAt = glm::normalize(pallaAt);
-			pallaPos = pallaPos + (translateSpeedPalla)*pallaAt;
-		}
+		pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
+		pallaAt = glm::vec3(pallaAt.x + random, pallaAt.y, pallaAt.z + random);
+		pallaAt = glm::normalize(pallaAt);
+		pallaPos = pallaPos + (translateSpeedPalla)*pallaAt;
 
 	}
 
@@ -664,10 +702,10 @@ int main()
 	myShader          = new Shader("vertex_shader.vs", "fragment_shader.fs");
 	pallaShader       = new Shader("vs_palla.vs", "fs_palla.fs");
 	bordoShader       = new Shader("vs_bordo.vs", "fs_bordo.fs");
-	cubiShader        = new Shader("vs_cubi.vs", "fs_cubi.fs");
+	mattoniShader     = new Shader("vs_mattoni.vs", "fs_mattoni.fs");
 	piattaformaShader = new Shader("vs_piattaforma.vs", "fs_piattaforma.fs");
 
-	texture_cubi        = loadtexture("../src/bricks.jpg");
+	texture_mattoni        = loadtexture("../src/bricks.jpg");
 	texture_piattaforma = loadtexture("../src/tiles6.jpg");
 	texture_bordo       = loadtexture("../src/tiles2.jpg");
 	texture_pavimento   = loadtexture("../src/tiles4.jpg");

@@ -44,10 +44,10 @@
     <None Include="fs_bordo.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="fs_cubi.fs">
+    <None Include="fs_mattoni.fs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="vs_cubi.vs">
+    <None Include="vs_mattoni.vs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="fs_piattaforma.fs">
