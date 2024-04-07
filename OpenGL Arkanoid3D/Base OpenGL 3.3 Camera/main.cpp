@@ -165,11 +165,7 @@ float translateSpeedPiattaforma;
 float dimCubo = 1.0;
 
 //Proprietà mattoni
-//const float lunghezzaMattone = 1.0f;
-//const float larghezzaMattone = 1.0f;
-//const float altezzaMattone   = 1.0f;
-
-const float lunghezzaMattone = 1.0f;
+const float lunghezzaMattone = 1.2f;
 const float larghezzaMattone = 0.5f;
 const float altezzaMattone = 0.5f;
 
@@ -542,8 +538,8 @@ void render(glm::mat4 projection)
 				mattoniShader->setVec3("colorcube", colors[mapBox[i][j]]);
 
 				/* Ogni cubo dista 1.1 unità dai vicini */
-				float x = -8.2 + i * 1.05;
-				float z = -6.0 + j * 1.05;
+				float x = -9.1 + i * 1.25;
+				float z = -6.0 + j * 1.0;
 				float y =  0.5;
 
 				glm::mat4 model = glm::mat4(1.0f);	//identity matrix
@@ -555,7 +551,7 @@ void render(glm::mat4 projection)
 
 				float rangeCollision = (larghezzaPalla + lunghezzaMattone) / 2;
 
-				if ( abs(x - pallaPos.x) <= rangeCollision && abs(z - pallaPos.z) <= rangeCollision) {
+				if ( abs(x - pallaPos.x) < rangeCollision && abs(z - pallaPos.z) < rangeCollision) {
 
 					mapBox[i][j] = 0;
 					cubiEliminati = cubiEliminati++;
@@ -683,7 +679,7 @@ int main()
 #endif
 
 																											 // glfw window creation
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL 3.3 - Labirinto!", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL 3.3 - Arkanoid!", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -771,5 +767,4 @@ int main()
 	glfwTerminate();
 	return 0;
 }
-
 
