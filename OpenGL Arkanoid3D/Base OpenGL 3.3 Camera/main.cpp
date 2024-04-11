@@ -98,15 +98,26 @@ int mapPavimento[14][15] = { {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
 						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 } };
 
 int mapMattoni[10][10] = { {0,0,0,0,0,0,0,0,0,0 },
-						   {6,5,4,3,2,1,0,0,0,0 },
-					       {6,5,4,3,2,1,0,0,0,0 },
-					       {6,5,4,3,2,1,0,0,0,0 },
-					       {6,5,4,3,2,1,0,0,0,0 },
-					       {6,5,4,3,2,1,0,0,0,0 },
-					       {6,5,4,3,2,1,0,0,0,0 },
-					       {6,5,4,3,2,1,0,0,0,0 },
-					       {6,5,4,3,2,1,0,0,0,0 },
+						   {0,5,4,3,2,1,0,0,0,0 },
+					       {0,5,4,3,2,1,0,0,0,0 },
+					       {0,5,4,3,2,1,0,0,0,0 },
+					       {0,5,4,3,2,1,0,0,0,0 },
+					       {0,5,4,3,2,1,0,0,0,0 },
+					       {0,5,4,3,2,1,0,0,0,0 },
+					       {0,5,4,3,2,1,0,0,0,0 },
+					       {0,5,4,3,2,1,0,0,0,0 },
 					       {0,0,0,0,0,0,0,0,0,0 }, };
+
+int mapMattoniSpeciali[10][10] = { {0,0,0,0,0,0,0,0,0,0 },
+								   {1,0,0,0,0,0,0,0,0,0 },
+								   {1,0,0,0,0,0,0,0,0,0 },
+								   {1,0,0,0,0,0,0,0,0,0 },
+								   {1,0,0,0,0,0,0,0,0,0 },
+								   {1,0,0,0,0,0,0,0,0,0 },
+								   {1,0,0,0,0,0,0,0,0,0 },
+								   {1,0,0,0,0,0,0,0,0,0 },
+								   {1,0,0,0,0,0,0,0,0,0 },
+								   {0,0,0,0,0,0,0,0,0,0 }, };
 
 //int mapMattoni[10][10] = { {0,0,0,1,0,0,0,0,0,0 },
 //					   {0,0,0,0,0,0,1,0,0,0 },
@@ -147,6 +158,7 @@ glm::vec3 cameraDir(0.0, 0.0, -0.1);	// Direzione dello sguardo
 glm::vec3 cameraSide(1.0, 0.0, 0.0);	// Direzione spostamento laterale
 
 int cubiEliminati = 0;
+int mattoniSpecialiEliminati = 0;
 
 //Proprietà palla
 glm::vec3 pallaPos(-3.4, 0.0, 2.2); // Posizione palla
@@ -194,9 +206,11 @@ unsigned int texture_piattaforma;
 unsigned int texture_bordo;
 unsigned int texture_pavimento;
 unsigned int texture_mattoni;
+unsigned int texture_mattoni_oro;
 unsigned int texture_palla;
 unsigned int texture_msgWin;
 unsigned int texture_msgLost;
+unsigned int texture_sfondo;
 unsigned int frameCount = 0;
 double previousTime = 0;
 double timeInterval = 0;
@@ -528,7 +542,6 @@ void render(glm::mat4 projection)
 		{
 			if (mapCorner[i][j] != 0)
 			{
-				bordoShader->setVec3("colorcube", colors[mapCorner[i][j]]);
 
 				/* Ogni cubo del bordo dista 0 unità dai vicini */
 				float x = -10 + i;
@@ -562,7 +575,6 @@ void render(glm::mat4 projection)
 		{
 			if (mapPavimento[i][j] != 0)
 			{
-				bordoShader->setVec3("colorcube", colors[mapPavimento[i][j]]);
 
 				/* Ogni cubo del bordo dista 1.0 unità dai vicini */
 				float x = -10 + i * 1.0;
@@ -576,6 +588,61 @@ void render(glm::mat4 projection)
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 
 			}
+		}
+	}
+
+	//Disegno i mattoni con due vite da eliminare
+	glBindTexture(GL_TEXTURE_2D, texture_mattoni_oro);
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			if (mapMattoniSpeciali[i][j] != 0)
+			{
+
+				/* Ogni cubo dista 1.1 unità dai vicini */
+				float x = -9.5 + i * lunghezzaMattone;
+				float z = -6.0 + j * larghezzaMattone;
+				float y = 0.1;
+
+				glm::mat4 mattoneSpeciale = glm::mat4(1.0f);	//identity matrix
+				mattoneSpeciale = glm::translate(mattoneSpeciale, glm::vec3(x, y, z));
+				mattoneSpeciale = glm::scale(mattoneSpeciale, glm::vec3(lunghezzaMattone, altezzaMattone, larghezzaMattone));
+				bordoShader->setMat4("model", mattoneSpeciale);
+
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+
+				float rangeCollision = (larghezzaPalla + lunghezzaMattone) / 2;
+
+				bool collision = false;
+
+				if (abs(x - pallaPos.x) < rangeCollision && abs(z - pallaPos.z) < rangeCollision) {
+					std::cout << "mapMattoniSpeciali : "<< i<<" , " << j <<" valore : "<< mapMattoniSpeciali[i][j] << std::endl;
+
+					collision = true;
+
+					float random = generaNumeroCasuale(-0.25f, 0.25f);
+
+					glm::vec3 normale = getNormaleMattone(x, z);
+
+					pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
+					pallaAt = glm::vec3(pallaAt.x + random, pallaAt.y, pallaAt.z + random);
+					pallaAt = glm::normalize(pallaAt);
+
+					pallaPos = pallaPos + (translateSpeedPalla)*pallaAt;
+
+				}
+
+				if (collision) {
+					mapMattoniSpeciali[i][j] = mapMattoniSpeciali[i][j] + 1;
+					if (mapMattoniSpeciali[i][j] == 3) {
+						mapMattoniSpeciali[i][j] = 0;
+						mattoniSpecialiEliminati = mattoniSpecialiEliminati++;
+					}
+					collision = false;
+				}
+			}
+
 		}
 	}
 
@@ -629,6 +696,8 @@ void render(glm::mat4 projection)
 		}
 	}
 
+
+
 	//Mesaggio hai perso se la pallina supera la piattaforma
 	if (pallaPos.z > piattaformaPos.z + 2.0f) {
 		speedPalla = 0;
@@ -649,7 +718,7 @@ void render(glm::mat4 projection)
 	}
 
 	//Mesaggio hai vinto se non sono rimasti cubi
-	if (cubiEliminati == 8*6) {
+	if (cubiEliminati + mattoniSpecialiEliminati == 48) {
 		speedPalla = 0;
 		//Sposto la camera
 		cameraPos = glm::vec3(0.0f, 20.0f, 1.8f);  // Posizione camera
@@ -684,6 +753,18 @@ void render(glm::mat4 projection)
 		pallaPos = pallaPos + (translateSpeedPalla)*pallaAt;
 
 	}
+
+	//Disegno lo sfondo
+	bordoShader->use();
+	glm::mat4 modelCuboSfondo = glm::mat4(1.0f);	//identity matrix
+	modelCuboSfondo = glm::translate(modelCuboSfondo, glm::vec3(-3.5f, -5.0f, -15.0f));
+	modelCuboSfondo = glm::scale(modelCuboSfondo, glm::vec3(35.0f, 35.0f, 0.1f));
+	bordoShader->setMat4("model", modelCuboSfondo);
+	bordoShader->setVec3("colorcube", colors[0]);
+	bordoShader->setInt("myTexture1", 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture_sfondo);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 
@@ -759,12 +840,14 @@ int main()
 	piattaformaShader = new Shader("vs_piattaforma.vs", "fs_piattaforma.fs");
 
 	texture_mattoni     = loadtexture("../src/bricks3.jpg");
+	texture_mattoni_oro = loadtexture("../src/oro2.jpg");
 	texture_piattaforma = loadtexture("../src/tiles6.jpg");
-	texture_bordo       = loadtexture("../src/tiles2.jpg");
-	texture_pavimento   = loadtexture("../src/tiles4.jpg");
+	texture_bordo       = loadtexture("../src/tiles4.jpg");
+	texture_pavimento   = loadtexture("../src/tiles7.jpg");
 	texture_palla       = loadtexture("../src/metal.jpg");
 	texture_msgLost     = loadtexture("../src/msgLost.jpg");
 	texture_msgWin      = loadtexture("../src/msgWin.jpg");
+	texture_sfondo      = loadtexture("../src/sfondo3.jpg");
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
