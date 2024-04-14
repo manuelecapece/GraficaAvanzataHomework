@@ -839,15 +839,15 @@ int main()
 	mattoniShader     = new Shader("vs_mattoni.vs", "fs_mattoni.fs");
 	piattaformaShader = new Shader("vs_piattaforma.vs", "fs_piattaforma.fs");
 
-	texture_mattoni     = loadtexture("../src/bricks3.jpg");
-	texture_mattoni_oro = loadtexture("../src/oro2.jpg");
-	texture_piattaforma = loadtexture("../src/tiles6.jpg");
-	texture_bordo       = loadtexture("../src/tiles4.jpg");
-	texture_pavimento   = loadtexture("../src/tiles7.jpg");
+	texture_mattoni     = loadtexture("../src/bricks.jpg");
+	texture_mattoni_oro = loadtexture("../src/oro.jpg");
+	texture_piattaforma = loadtexture("../src/tiles.jpg");
+	texture_bordo       = loadtexture("../src/tiles3.jpg");
+	texture_pavimento   = loadtexture("../src/tiles2.jpg");
 	texture_palla       = loadtexture("../src/metal.jpg");
 	texture_msgLost     = loadtexture("../src/msgLost.jpg");
 	texture_msgWin      = loadtexture("../src/msgWin.jpg");
-	texture_sfondo      = loadtexture("../src/sfondo3.jpg");
+	texture_sfondo      = loadtexture("../src/sfondo.jpg");
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
