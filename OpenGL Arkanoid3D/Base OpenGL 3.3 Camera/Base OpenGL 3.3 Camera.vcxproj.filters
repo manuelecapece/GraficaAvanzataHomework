@@ -26,12 +26,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment_shader.fs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="vertex_shader.vs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="fs_palla.fs">
       <Filter>Shader Files</Filter>
     </None>
@@ -58,13 +52,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="shader_s.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SolidSphere.h">
+    <ClInclude Include="model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader_m.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

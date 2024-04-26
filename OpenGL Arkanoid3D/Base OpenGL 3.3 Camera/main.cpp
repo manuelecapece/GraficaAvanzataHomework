@@ -1,23 +1,24 @@
+#include <stack>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "stb_image.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
-#include <cstring>
-#include <string>
-#include <stack>
-#include "shader_s.h"
+//#include <irrklang/irrKlang.h>
+//#include "render_text.h"
+#include "shader_m.h"
 #include "camera.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "model.h"
+
+#include <iostream>
+
 #include <random>
 
 // settings
-const unsigned int SCR_WIDTH = 900;
-const unsigned int SCR_HEIGHT = 900;
+int SCR_WIDTH = 1920;
+int SCR_HEIGHT = 1080;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -82,53 +83,17 @@ int mapCorner[14][15] = { {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
 					      {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 						  {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 } };
 
-int mapPavimento[14][15] = { {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-						     {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 } };
+int mapMattoni[8][5] = {{5,4,3,2,1},
+					    {5,4,3,2,1},
+					    {5,4,3,2,1},
+					    {5,4,3,2,1},
+					    {5,4,3,2,1},
+					    {5,4,3,2,1},
+					    {5,4,3,2,1},
+					    {5,4,3,2,1},};
 
-int mapMattoni[10][10] = { {0,0,0,0,0,0,0,0,0,0 },
-						   {0,5,4,3,2,1,0,0,0,0 },
-					       {0,5,4,3,2,1,0,0,0,0 },
-					       {0,5,4,3,2,1,0,0,0,0 },
-					       {0,5,4,3,2,1,0,0,0,0 },
-					       {0,5,4,3,2,1,0,0,0,0 },
-					       {0,5,4,3,2,1,0,0,0,0 },
-					       {0,5,4,3,2,1,0,0,0,0 },
-					       {0,5,4,3,2,1,0,0,0,0 },
-					       {0,0,0,0,0,0,0,0,0,0 }, };
 
-int mapMattoniSpeciali[10][10] = { {0,0,0,0,0,0,0,0,0,0 },
-								   {1,0,0,0,0,0,0,0,0,0 },
-								   {1,0,0,0,0,0,0,0,0,0 },
-								   {1,0,0,0,0,0,0,0,0,0 },
-								   {1,0,0,0,0,0,0,0,0,0 },
-								   {1,0,0,0,0,0,0,0,0,0 },
-								   {1,0,0,0,0,0,0,0,0,0 },
-								   {1,0,0,0,0,0,0,0,0,0 },
-								   {1,0,0,0,0,0,0,0,0,0 },
-								   {0,0,0,0,0,0,0,0,0,0 }, };
-
-//int mapMattoni[10][10] = { {0,0,0,1,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,0,1,0,0,0 },
-//					   {0,0,0,0,1,0,0,0,0,0 },
-//					   {0,0,0,1,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,1,0,0,0,0 },
-//					   {0,0,0,0,0,0,1,0,0,0 },
-//					   {0,0,0,0,1,0,0,0,0,0 },
-//					   {0,0,0,0,0,1,0,0,0,0 },
-//					   {0,0,0,0,0,0,0,0,0,0 },
-//					   {0,0,0,0,0,0,0,0,0,0 }, };
+int vecMattoniOro[8] = {1,1,1,1,1,1,1,1};
 
 /* Array dei colori da utilizzare */
 const glm::vec3 colors[8] = {	{ 1.0, 1.0, 1.0 },
@@ -189,6 +154,10 @@ float dimCubo = 1.0;
 const float lunghezzaMattone = 1.35f;
 const float larghezzaMattone = 0.7f;
 const float altezzaMattone = 0.8f;
+const float posXmattoni = -8.2f;
+const float posYmattoni = 0.1f;
+const float posZmattoni = -6.0f;
+const float posZmattoniOro = posZmattoni - 1.0 * larghezzaMattone;
 
 //Timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -216,7 +185,6 @@ double previousTime = 0;
 double timeInterval = 0;
 unsigned int fps = 0;
 
-Shader *myShader;
 Shader *pallaShader;
 Shader *piattaformaShader;
 Shader *mattoniShader;
@@ -372,28 +340,28 @@ glm::vec3 getNormaleMattone(float x_cube,float z_cube) {
 	//La palla colpisce la faccia inferiore
 	if (pallaAt.z < 0 && deltaPosX <= rangeCollisionX && pallaPos.x > x0_cube && pallaPos.x < x1_cube) {
 		//speedPalla = 0;
-		std::cout << "Hit face DOWN " << std::endl;
+		//std::cout << "Hit face DOWN " << std::endl;
 		glm::vec3 normale = glm::vec3(0.0f, 0.0f, -1.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia superiore
 	else if (pallaAt.z > 0 && deltaPosX <= rangeCollisionX && pallaPos.x > x0_cube && pallaPos.x < x1_cube) {
 		//speedPalla = 0;
-		std::cout << "Hit face UP " << std::endl;
+		//std::cout << "Hit face UP " << std::endl;
 		glm::vec3 normale = glm::vec3(0.0f, 0.0f, 1.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia dx
 	else if (pallaAt.x < 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_cube && pallaPos.z < z1_cube) {
 		//speedPalla = 0;
-		std::cout << "Hit face DX " << std::endl;
+		//std::cout << "Hit face DX " << std::endl;
 		glm::vec3 normale = glm::vec3(1.0f, 0.0f, 0.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia sx
 	else if (pallaAt.x > 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_cube && pallaPos.z < z1_cube) {
 		//speedPalla = 0;
-		std::cout << "Hit face SX " << std::endl;
+		//std::cout << "Hit face SX " << std::endl;
 		glm::vec3 normale = glm::vec3(-1.0f, 0.0f, 0.0f);
 		return normale;
 	}
@@ -406,25 +374,25 @@ glm::vec3 getNormaleMattone(float x_cube,float z_cube) {
 		 
 		//La palla colpisce lo spigolo in alto a DX
 		if (pallaAt.x < 0 && pallaAt.z > 0) {
-			std::cout << "Hit SPIGOLO alto DX " << std::endl;
+			//std::cout << "Hit SPIGOLO alto DX " << std::endl;
 			glm::vec3 normale = glm::vec3(1.0f, 0.0f, 1.0f);
 			return normale;
 		}
 		//La palla colpisce lo spigolo in alto a SX
 		if (pallaAt.x > 0 && pallaAt.z > 0) {
-			std::cout << "Hit SPIGOLO alto SX " << std::endl;
+			//std::cout << "Hit SPIGOLO alto SX " << std::endl;
 			glm::vec3 normale = glm::vec3(-1.0f, 0.0f, 1.0f);
 			return normale;
 		}
 		//La palla colpisce lo spigolo in basso a DX
 		if (pallaAt.x < 0 && pallaAt.z < 0) {
-			std::cout << "Hit SPIGOLO basso DX " << std::endl;
+			//std::cout << "Hit SPIGOLO basso DX " << std::endl;
 			glm::vec3 normale = glm::vec3(-1.0f, 0.0f, -1.0f);
 			return normale;
 		}
 		//La palla colpisce lo spigolo in basso a SX
 		if (pallaAt.x > 0 && pallaAt.z < 0) {
-			std::cout << "Hit SPIGOLO basso SX " << std::endl;
+			//std::cout << "Hit SPIGOLO basso SX " << std::endl;
 			glm::vec3 normale = glm::vec3(1.0f, 0.0f, -1.0f);
 			return normale;
 		}
@@ -447,10 +415,10 @@ glm::vec3 getNormalePiattaforma() {
 	float diffX_sx = posFaceSxPiattaforma - posFaceDxPalla;
 	float diffZ_up = posFaceUpPiattaforma - posFaceDownPalla;
 
-	std::cout << "posFaceDownPalla: " << posFaceDownPalla << std::endl;
-	std::cout << "posFaceUpPiattaforma: "   << posFaceUpPiattaforma << std::endl;
-	std::cout << "diffX_dx: " << diffX_dx << std::endl;
-	std::cout << "diffZ_up: " << diffZ_up << std::endl;
+	//std::cout << "posFaceDownPalla: " << posFaceDownPalla << std::endl;
+	//std::cout << "posFaceUpPiattaforma: "   << posFaceUpPiattaforma << std::endl;
+	//std::cout << "diffX_dx: " << diffX_dx << std::endl;
+	//std::cout << "diffZ_up: " << diffZ_up << std::endl;
 
 	float deltaPosX = abs(piattaformaPos.x - pallaPos.x);
 	float deltaPosZ = abs(piattaformaPos.z - pallaPos.z);
@@ -463,19 +431,19 @@ glm::vec3 getNormalePiattaforma() {
 
 	//La palla colpisce la faccia superiore
 	if (pallaAt.z > 0 && deltaPosX <= rangeCollisionX && pallaPos.x > x0_piattaforma && pallaPos.x < x1_piattaforma && diffZ_up > 0.04) {
-		std::cout << "* Hit face PLATFORM UP " << std::endl;
+		//std::cout << "* Hit face PLATFORM UP " << std::endl;
 		glm::vec3 normale = glm::vec3(0.0f, 0.0f, 1.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia destra
 	else if (pallaAt.x < 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_piattaforma && pallaPos.z < z1_piattaforma && diffX_dx > 0.04) {
-		std::cout << "* Hit face PLATFORM DX " << std::endl;
+		//std::cout << "* Hit face PLATFORM DX " << std::endl;
 		glm::vec3 normale = glm::vec3(1.0f, 0.0f, 1.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia sx
 	else if (pallaAt.x > 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_piattaforma && pallaPos.z < z1_piattaforma && diffX_sx > 0.04) {
-		std::cout << "* Hit face PLATFORM SX " << std::endl;
+		//std::cout << "* Hit face PLATFORM SX " << std::endl;
 		glm::vec3 normale = glm::vec3(-1.0f, 0.0f, 1.0f);
 		return normale;
 	}	
@@ -492,13 +460,9 @@ glm::vec3 getNormalePiattaforma() {
 void render(glm::mat4 projection)
 {
 
-	//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-	myShader->use();
-	myShader->setMat4("projection", projection);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraAt, cameraUp);
-	myShader->setMat4("view", view);
 
 	//Disegno la piattaforma
 	piattaformaShader->use();
@@ -544,7 +508,7 @@ void render(glm::mat4 projection)
 			{
 
 				/* Ogni cubo del bordo dista 0 unità dai vicini */
-				float x = -10 + i;
+				float x = posXmattoni - 1.8 + i;
 				float z = -10 + j;
 
 				glm::mat4 bordo = glm::mat4(1.0f);	//identity matrix
@@ -569,81 +533,62 @@ void render(glm::mat4 projection)
 
 	//Disegno il pavimento
 	glBindTexture(GL_TEXTURE_2D, texture_pavimento);
-	for (int i = 0; i < 14; i++)
-	{
-		for (int j = 0; j < 15; j++)
-		{
-			if (mapPavimento[i][j] != 0)
-			{
+	glm::mat4 pavimento = glm::mat4(1.0f);	//identity matrix
+	pavimento = glm::translate(pavimento, glm::vec3(-3.5f, -1.0f, -3.0f));
+	pavimento = glm::scale(pavimento, glm::vec3(14.0f, 0.1f, 15.0f));
+	bordoShader->setMat4("model", pavimento);
 
-				/* Ogni cubo del bordo dista 1.0 unità dai vicini */
-				float x = -10 + i * 1.0;
-				float z = -10 + j * 1.0;
-
-				glm::mat4 pavimento = glm::mat4(1.0f);	//identity matrix
-				pavimento = glm::translate(pavimento, glm::vec3(x, -1.0f, z));
-				pavimento = glm::scale(pavimento, glm::vec3(dimCubo, dimCubo, dimCubo));
-				bordoShader->setMat4("model", pavimento);
-
-				glDrawArrays(GL_TRIANGLES, 0, 36);
-
-			}
-		}
-	}
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno i mattoni con due vite da eliminare
 	glBindTexture(GL_TEXTURE_2D, texture_mattoni_oro);
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 8 ; i++)
 	{
-		for (int j = 0; j < 10; j++)
+
+		if (vecMattoniOro[i] != 0)
 		{
-			if (mapMattoniSpeciali[i][j] != 0)
-			{
 
-				/* Ogni cubo dista 1.1 unità dai vicini */
-				float x = -9.5 + i * lunghezzaMattone;
-				float z = -6.0 + j * larghezzaMattone;
-				float y = 0.1;
+			/* Ogni cubo dista 1.1 unità dai vicini */
+			float x = posXmattoni + i * lunghezzaMattone;
+			float z = posZmattoniOro;
 
-				glm::mat4 mattoneSpeciale = glm::mat4(1.0f);	//identity matrix
-				mattoneSpeciale = glm::translate(mattoneSpeciale, glm::vec3(x, y, z));
-				mattoneSpeciale = glm::scale(mattoneSpeciale, glm::vec3(lunghezzaMattone, altezzaMattone, larghezzaMattone));
-				bordoShader->setMat4("model", mattoneSpeciale);
+			glm::mat4 mattoneSpeciale = glm::mat4(1.0f);	//identity matrix
+			mattoneSpeciale = glm::translate(mattoneSpeciale, glm::vec3(x, posYmattoni, z));
+			mattoneSpeciale = glm::scale(mattoneSpeciale, glm::vec3(lunghezzaMattone, altezzaMattone, larghezzaMattone));
+			bordoShader->setMat4("model", mattoneSpeciale);
 
-				glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 
-				float rangeCollision = (larghezzaPalla + lunghezzaMattone) / 2;
+			float rangeCollision = (larghezzaPalla + lunghezzaMattone) / 2;
 
-				bool collision = false;
+			bool collision = false;
 
-				if (abs(x - pallaPos.x) < rangeCollision && abs(z - pallaPos.z) < rangeCollision) {
-					std::cout << "mapMattoniSpeciali : "<< i<<" , " << j <<" valore : "<< mapMattoniSpeciali[i][j] << std::endl;
+			if (abs(x - pallaPos.x) < rangeCollision && abs(z - pallaPos.z) < rangeCollision) {
 
-					collision = true;
+				collision = true;
 
-					float random = generaNumeroCasuale(-0.25f, 0.25f);
+				float random = generaNumeroCasuale(-0.25f, 0.25f);
 
-					glm::vec3 normale = getNormaleMattone(x, z);
+				glm::vec3 normale = getNormaleMattone(x, z);
 
-					pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
-					pallaAt = glm::vec3(pallaAt.x + random, pallaAt.y, pallaAt.z + random);
-					pallaAt = glm::normalize(pallaAt);
+				pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
+				pallaAt = glm::vec3(pallaAt.x + random, pallaAt.y, pallaAt.z + random);
+				pallaAt = glm::normalize(pallaAt);
 
-					pallaPos = pallaPos + (translateSpeedPalla)*pallaAt;
+				pallaPos = pallaPos + (translateSpeedPalla)*pallaAt;
 
-				}
-
-				if (collision) {
-					mapMattoniSpeciali[i][j] = mapMattoniSpeciali[i][j] + 1;
-					if (mapMattoniSpeciali[i][j] == 3) {
-						mapMattoniSpeciali[i][j] = 0;
-						mattoniSpecialiEliminati = mattoniSpecialiEliminati++;
-					}
-					collision = false;
-				}
 			}
 
+			if (collision) {
+				vecMattoniOro[i] = vecMattoniOro[i] + 1;
+				if (vecMattoniOro[i] == 3) {
+					vecMattoniOro[i] = 0;
+					mattoniSpecialiEliminati = mattoniSpecialiEliminati++;
+				}
+				collision = false;
+			}
 		}
+
 	}
 
 	//Disegno i mattoni da eliminare
@@ -653,21 +598,20 @@ void render(glm::mat4 projection)
 	mattoniShader->setInt("myTexture1", 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_mattoni);
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 8; i++)
 	{
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < 5; j++)
 		{
 			if (mapMattoni[i][j] != 0)
 			{
 				mattoniShader->setVec3("colorcube", colors[mapMattoni[i][j]]);
 
 				/* Ogni cubo dista 1.1 unità dai vicini */
-				float x = -9.5 + i * lunghezzaMattone;
-				float z = -6.0 + j * larghezzaMattone;
-				float y = 0.1;
+				float x = posXmattoni + i * lunghezzaMattone;
+				float z = posZmattoni + j * larghezzaMattone;
 
 				glm::mat4 model = glm::mat4(1.0f);	//identity matrix
-				model = glm::translate(model, glm::vec3(x, y, z));
+				model = glm::translate(model, glm::vec3(x, posYmattoni, z));
 				model = glm::scale(model, glm::vec3(lunghezzaMattone, altezzaMattone, larghezzaMattone));
 				mattoniShader->setMat4("model", model);
 
@@ -757,8 +701,9 @@ void render(glm::mat4 projection)
 	//Disegno lo sfondo
 	bordoShader->use();
 	glm::mat4 modelCuboSfondo = glm::mat4(1.0f);	//identity matrix
-	modelCuboSfondo = glm::translate(modelCuboSfondo, glm::vec3(-3.5f, -5.0f, -15.0f));
-	modelCuboSfondo = glm::scale(modelCuboSfondo, glm::vec3(35.0f, 35.0f, 0.1f));
+	modelCuboSfondo = glm::translate(modelCuboSfondo, glm::vec3(-3.5f, -10.0f, -5.0f));
+	modelCuboSfondo = glm::rotate(modelCuboSfondo, -45.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	modelCuboSfondo = glm::scale(modelCuboSfondo, glm::vec3(55.0f, 55.0f, 0.1f));
 	bordoShader->setMat4("model", modelCuboSfondo);
 	bordoShader->setVec3("colorcube", colors[0]);
 	bordoShader->setInt("myTexture1", 1);
@@ -816,13 +761,31 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 #endif
 
-																											 // glfw window creation
+	//Decommentare per schermo intero
+	/*
+	// settings
+	// Ottenere il monitor primario
+	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+
+	// Ottenere la modalità video corrente del monitor primario
+	const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
+
+	SCR_WIDTH = videoMode->width;
+	SCR_HEIGHT = videoMode->height;
+	*/
+	
+	// glfw window creation
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL 3.3 - Arkanoid!", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
+
+	// Impostare la finestra in modalità schermo intero
+	/*
+	glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, videoMode->width, videoMode->height, videoMode->refreshRate);
+	*/
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -833,7 +796,6 @@ int main()
 		return -1;
 	}
 
-	myShader          = new Shader("vertex_shader.vs", "fragment_shader.fs");
 	pallaShader       = new Shader("vs_palla.vs", "fs_palla.fs");
 	bordoShader       = new Shader("vs_bordo.vs", "fs_bordo.fs");
 	mattoniShader     = new Shader("vs_mattoni.vs", "fs_mattoni.fs");
@@ -843,11 +805,14 @@ int main()
 	texture_mattoni_oro = loadtexture("../src/oro.jpg");
 	texture_piattaforma = loadtexture("../src/tiles.jpg");
 	texture_bordo       = loadtexture("../src/tiles3.jpg");
-	texture_pavimento   = loadtexture("../src/tiles2.jpg");
+	texture_pavimento   = loadtexture("../src/tiles22.jpg");
 	texture_palla       = loadtexture("../src/metal.jpg");
 	texture_msgLost     = loadtexture("../src/msgLost.jpg");
 	texture_msgWin      = loadtexture("../src/msgWin.jpg");
 	texture_sfondo      = loadtexture("../src/sfondo.jpg");
+
+	// load models
+	Model sphere("../src/planet2.obj");
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -880,7 +845,6 @@ int main()
 
 	// Genera un numero casuale float tra -12 e 12
 	random_x = generaNumeroCasualeStart(-6.0f, 6.0f);
-	std::cout << "random_x: " << random_x << std::endl;
 	
 	// render loop
 	while (!glfwWindowShouldClose(window))

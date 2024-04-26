@@ -1,0 +1,81 @@
+# Aspose.3D Wavefront OBJ Exporter
+# Copyright 2004-2023 Aspose Pty Ltd.
+# File created: 04/21/2023 10:42:49
+
+newmtl sun1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd sun.jpg
+newmtl mercury1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd mercury.jpg
+newmtl moon18
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd moon.jpg
+newmtl venus1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd venus.jpg
+newmtl earth1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd earth.jpg
+newmtl mars1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd mars.jpg
+newmtl jupiter1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd jupiter.jpg
+newmtl saturn1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd saturn.jpg
+newmtl uranus1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd uranus.jpg
+newmtl neptune1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd neptune.jpg
+newmtl pluto1
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd pluto.jpg
