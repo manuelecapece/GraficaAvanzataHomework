@@ -16,12 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="model_loading.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="model_loading.fs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="vs_piattaforma.vs">
       <Filter>Resource Files</Filter>
     </None>
@@ -46,10 +40,16 @@
     <None Include="fs_piattaforma.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="vs_palla2.vs">
+    <None Include="lamp.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="fs_palla2.fs">
+    <None Include="lamp.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="color.fs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

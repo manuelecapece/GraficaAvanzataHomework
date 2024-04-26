@@ -164,18 +164,18 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="color.fs" />
+    <None Include="color.vs" />
     <None Include="fs_bordo.fs" />
     <None Include="fs_mattoni.fs" />
     <None Include="fs_palla.fs" />
-    <None Include="fs_palla2.fs" />
     <None Include="fs_piattaforma.fs" />
-    <None Include="model_loading.fs" />
-    <None Include="model_loading.vs" />
+    <None Include="lamp.fs" />
+    <None Include="lamp.vs" />
     <None Include="packages.config" />
     <None Include="vs_bordo.vs" />
     <None Include="vs_mattoni.vs" />
     <None Include="vs_palla.vs" />
-    <None Include="vs_palla2.vs" />
     <None Include="vs_piattaforma.vs" />
   </ItemGroup>
   <ItemGroup>
