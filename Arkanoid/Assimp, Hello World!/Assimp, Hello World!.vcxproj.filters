@@ -22,16 +22,10 @@
     <None Include="vs_palla.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="vs_mattoni.vs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="vs_bordo.vs">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="fs_bordo.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="fs_mattoni.fs">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="fs_palla.fs">
@@ -40,16 +34,16 @@
     <None Include="fs_piattaforma.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="lamp.vs">
+    <None Include="point_light.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="lamp.fs">
+    <None Include="point_light.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="color.vs">
+    <None Include="blending.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="color.fs">
+    <None Include="blending.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

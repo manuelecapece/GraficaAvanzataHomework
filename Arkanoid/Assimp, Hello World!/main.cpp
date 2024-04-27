@@ -13,12 +13,24 @@
 
 #include <iostream>
 #include <random>
+#include <cmath>
 
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
 std::stack<glm::mat4> glm_ModelViewMatrix;
+
+vector<glm::vec3> windows
+{
+	glm::vec3(-1.5f, 0.0f, -0.48f),
+	glm::vec3(1.5f, 0.0f, 0.51f),
+	glm::vec3(0.0f, 0.0f, 0.7f),
+	glm::vec3(-0.3f, 0.0f, -2.3f),
+	glm::vec3(0.5f, 0.0f, -0.6f)
+};
 
 float vertices[] = {
 	// positions          // normals           // texture coords
@@ -80,37 +92,16 @@ int mapCorner[14][15] = { {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
 						  {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 						  {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 } };
 
-int mapMattoni[8][5] = { {5,4,3,2,1},
+int mapMattoni[8][5] = { {5,6,3,2,1},
+						 {6,4,6,2,1},
 						 {5,4,3,2,1},
-						 {5,4,3,2,1},
-						 {5,4,3,2,1},
-						 {5,4,3,2,1},
-						 {5,4,3,2,1},
-						 {5,4,3,2,1},
-						 {5,4,3,2,1}, };
-
-//int mapMattoni[8][5] = { {0,0,0,0,0},
-//						 {0,0,0,0,0},
-//						 {0,0,0,0,0},
-//						 {0,0,0,0,0},
-//						 {0,0,0,0,0},
-//						 {0,0,0,0,0},
-//						 {0,0,0,0,0},
-//						 {0,0,0,0,0}, };
-
+						 {5,4,6,2,1},
+						 {6,4,3,2,6},
+						 {5,4,3,6,1},
+						 {5,4,3,2,6},
+						 {5,6,3,2,1},};
 
 int vecMattoniOro[8] = { 1,1,1,1,1,1,1,1 };
-
-/* Array dei colori da utilizzare */
-const glm::vec3 colors[8] = { { 1.0, 1.0, 1.0 },
-								{ 1.0, 0.0, 0.0 },
-								{ 0.0, 1.0, 0.0 },
-								{ 0.0, 0.0, 1.0 },
-								{ 0.0, 1.0, 1.0 },
-								{ 1.0, 1.0, 1.0 },
-								{ 1.0, 0.0, 1.0 },
-								{ 0.0, 0.0, 0.0 }
-};
 
 //Vista isometrica frontale dall'alto
 glm::vec3 cameraPos(-3.5, 12.5, 12.5);  // Posizione camera
@@ -128,21 +119,19 @@ glm::vec3 cameraUp(0.0, 1.0, 0.0);		// Vettore up...la camera e sempre parallela
 glm::vec3 cameraDir(0.0, 0.0, -0.1);	// Direzione dello sguardo
 glm::vec3 cameraSide(1.0, 0.0, 0.0);	// Direzione spostamento laterale
 
-unsigned int cubeVAO, lightVAO;
+unsigned int cubeVAO;
 unsigned int cubeVBO;
-unsigned int diffuseMap, specularMap;
 
 Shader* lightingShader;
-Shader* lampShader;
 
 // lighting
-glm::vec3 lightPos(-3.4, 0.0, 2.2);
+glm::vec3 lightPos(-3.4, 0.0, 2.9);
 
 int cubiEliminati = 0;
 int mattoniSpecialiEliminati = 0;
 
 //Proprieta palla
-glm::vec3 pallaPos(-3.4, 0.0, 2.2); // Posizione palla
+glm::vec3 pallaPos(-3.4, 0.0, 2.9); // Posizione palla
 glm::vec3 pallaAt(0.0, 0.0, 0.0); // Punto in cui e diretta la palla
 glm::vec3 pallaUp(0.0, 1.0, 0.0); // Vettore up...la palla e sempre parallela al piano
 const float lunghezzaPalla = 0.3f;
@@ -150,18 +139,6 @@ const float larghezzaPalla = 0.3f;
 const float altezzaPalla = 0.3f;
 float speedPalla = 7; // velocita della sfera
 float translateSpeedPalla;
-
-//Proprieta piattaforma
-glm::vec3 piattaformaPos(-3.4, 0.0, 3.7);
-float translateRight = 0;
-float translateLeft = 0;
-float limX_pos = 1.3386;
-float limX_neg = -8.34348;
-float speedPiattaforma = 6.5;  // velocita della piattaforma
-const float lunghezzaPiattaforma = 2.0f;
-const float larghezzaPiattaforma = 0.4f;
-const float altezzaPiattaforma = 1.0f;
-float translateSpeedPiattaforma;
 
 //Proprieta cubi bordo,pavimento 
 float dimCubo = 1.0;
@@ -172,9 +149,21 @@ const float larghezzaMattone = 0.7f;
 const float altezzaMattone = 0.8f;
 const float spazioMattoni = 1.05f;
 const float posXmattoni = -8.2f;
-const float posYmattoni = 0.1f;
+const float posYmattoni = 0.3f;
 const float posZmattoni = -6.0f;
 const float posZmattoniOro = posZmattoni - 1.0 * larghezzaMattone;
+
+//Proprieta piattaforma
+glm::vec3 piattaformaPos(-3.4, 0.0, 3.7);
+float translateRight = 0;
+float translateLeft = 0;
+float speedPiattaforma = 6.5;  // velocita della piattaforma
+const float lunghezzaPiattaforma = 2.0f;
+const float larghezzaPiattaforma = 0.4f;
+const float altezzaPiattaforma = 1.0f;
+float translateSpeedPiattaforma;
+float limX_pos = posXmattoni + dimCubo*10 - 0.1;
+float limX_neg = posXmattoni + 0.1;
 
 //Timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -190,29 +179,31 @@ bool exitGame = false;
 unsigned int texture_piattaforma;
 unsigned int texture_bordo;
 unsigned int texture_pavimento;
-unsigned int tx_pavimento_specular;
-unsigned int texture_mattoni;
-unsigned int texture_mattoni_oro;
 unsigned int texture_palla;
 unsigned int texture_msgWin;
 unsigned int texture_msgLost;
 unsigned int texture_sfondo;
-unsigned int texture_pianeta;
+
+//Texture materiali
 unsigned int tx_goldSpecular;
 unsigned int tx_goldDiffuse;
 unsigned int tx_ironDiffuse;
 unsigned int tx_copperDiffuse;
 unsigned int tx_silverDiffuse;
-unsigned int tx_rustDiffuse;
-unsigned int tx_blackMetalDiffuse;
+unsigned int tx_greenPlastic;
+unsigned int tx_bluePlastic;
+
+//Texture trasparenza
+unsigned int transparentTexture;
+
 unsigned int frameCount = 0;
 double previousTime = 0;
 double timeInterval = 0;
 unsigned int fps = 0;
 
 Shader* piattaformaShader;
-Shader* mattoniShader;
 Shader* bordoShader;
+Shader* blendingShader;
 
 float random_x;
 
@@ -559,6 +550,44 @@ void controllaCollisionePiattaforma() {
 }
 
 
+// load and create a texture per le trasparenti, le carica storte
+unsigned int loadTexture(char const* path)
+{
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+
+	int width, height, nrComponents;
+	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+	if (data)
+	{
+		GLenum format;
+		if (nrComponents == 1)
+			format = GL_RED;
+		else if (nrComponents == 3)
+			format = GL_RGB;
+		else if (nrComponents == 4)
+			format = GL_RGBA;
+
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(data);
+	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << path << std::endl;
+		stbi_image_free(data);
+	}
+
+	return textureID;
+}
+
 // load and create a texture 
 unsigned int loadtexture(std::string filename)
 {
@@ -615,6 +644,11 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 	piattaformaShader->setInt("myTexture1", 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_piattaforma);
+	// Abilita il mipmapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Genera i mipmap
+	glGenerateMipmap(GL_TEXTURE_2D);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno il bordo
@@ -624,6 +658,11 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 	bordoShader->setInt("myTexture1", 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_bordo);
+	// Abilita il mipmapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Genera i mipmap
+	glGenerateMipmap(GL_TEXTURE_2D);
 	for (int i = 0; i < 14; i++)
 	{
 		for (int j = 0; j < 15; j++)
@@ -652,17 +691,20 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 		speedPalla = 0;
 		//Sposto la camera
 		cameraPos = glm::vec3(0.0f, 20.0f, 1.8f);  // Posizione camera
-		cameraAt = glm::vec3(0.0f, 20.0f, -1.0f);	// Punto in cui "guarda" la camera
+		cameraAt = glm::vec3(0.0f, 20.0f, 0.0f);	// Punto in cui "guarda" la camera
 		bordoShader->use();
-
 		glm::mat4 modelDialogBox = glm::mat4(1.0f);	//identity matrix
 		modelDialogBox = glm::translate(modelDialogBox, glm::vec3(0.0f, 20.0f, 0.0f));
 		modelDialogBox = glm::scale(modelDialogBox, glm::vec3(1.0f, 1.0f, 1.0f));
 		bordoShader->setMat4("model", modelDialogBox);
-		bordoShader->setVec3("colorcube", colors[0]);
 		bordoShader->setInt("myTexture1", 1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture_msgLost);
+		// Abilita il mipmapping
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// Genera i mipmap
+		glGenerateMipmap(GL_TEXTURE_2D);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
@@ -678,10 +720,14 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 		modelDialogBox = glm::translate(modelDialogBox, glm::vec3(0.0f, 20.0f, 0.0f));
 		modelDialogBox = glm::scale(modelDialogBox, glm::vec3(1.0f, 1.0f, 1.0f));
 		bordoShader->setMat4("model", modelDialogBox);
-		bordoShader->setVec3("colorcube", colors[0]);
 		bordoShader->setInt("myTexture1", 1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture_msgWin);
+		// Abilita il mipmapping
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// Genera i mipmap
+		glGenerateMipmap(GL_TEXTURE_2D);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
@@ -695,10 +741,14 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 	modelCuboSfondo = glm::rotate(modelCuboSfondo, -45.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	modelCuboSfondo = glm::scale(modelCuboSfondo, glm::vec3(55.0f, 55.0f, 0.1f));
 	bordoShader->setMat4("model", modelCuboSfondo);
-	bordoShader->setVec3("colorcube", colors[0]);
 	bordoShader->setInt("myTexture1", 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_sfondo);
+	// Abilita il mipmapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Genera i mipmap
+	glGenerateMipmap(GL_TEXTURE_2D);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno la palla (per ora e un cubo)
@@ -725,44 +775,76 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 	pallaShader.setMat4("model", modelSfera2);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_palla);
+	// Abilita il mipmapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Genera i mipmap
+	glGenerateMipmap(GL_TEXTURE_2D);
 	modelSfera.Draw(pallaShader);
 
+	//Disegno il pavimento
 
 	lightingShader->use();
 	lightingShader->setVec3("light.position", lightPos);
 	lightingShader->setVec3("viewPos", cameraPos);
 
 	// light properties
-	lightingShader->setVec3("light.ambient", 0.75f, 0.75f, 0.75f);
-	lightingShader->setVec3("light.diffuse", 0.80f, 0.80f, 0.80f);
-	lightingShader->setVec3("light.specular", 0.15f, 0.15f, 0.15f);
+	lightingShader->setVec3("light.ambient", 0.8f, 0.8f, 0.8f);
+	lightingShader->setVec3("light.diffuse", 0.8f, 0.8f, 0.8f);
+	lightingShader->setVec3("light.specular", 0.95f, 0.95f, 0.95f);
+	lightingShader->setFloat("light.constant", 1.0f);
+	lightingShader->setFloat("light.linear", 0.09f);
+	lightingShader->setFloat("light.quadratic", 0.032f);
 
 	// material properties
 	lightingShader->setInt("material.diffuse", 0);
 	lightingShader->setInt("material.specular", 1);
-	lightingShader->setFloat("material.shininess", 0.1);
+	lightingShader->setFloat("material.shininess", 32.0f);
 
 	// view/projection transformations
 	lightingShader->setMat4("projection", projection);
 	lightingShader->setMat4("view", view);
 
-	//Disegno il pavimento
-	lightingShader->use();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture_pavimento);
+	blendingShader->setMat4("projection", projection);
+	blendingShader->setMat4("view", view);
+	blendingShader->setInt("texture1", 0);
 
+	// world transformation
 	glm::mat4 pavimento = glm::mat4(1.0f);	//identity matrix
 	pavimento = glm::translate(pavimento, glm::vec3(-3.5f, -1.0f, -3.0f));
 	pavimento = glm::scale(pavimento, glm::vec3(14.0f, 0.1f, 15.0f));
 	lightingShader->setMat4("model", pavimento);
+
+	// bind diffuse map
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture_pavimento);
+	// bind specular map
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
+	//Disegno il pavimento
 	glBindVertexArray(cubeVAO);
+	// Abilita il mipmapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Genera i mipmap
+	glGenerateMipmap(GL_TEXTURE_2D);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno i mattoni di oro (con due vite)
+	//gold properties
+	lightingShader->setVec3("material.diffuse", 0.75164, 0.60648, 0.22648);
+	lightingShader->setVec3("material.specular", 0.628281 ,0.555802, 0.366065);
+	lightingShader->setFloat("material.shininess", 51.2f);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tx_goldDiffuse);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, specularMap);
+	glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
+	// Abilita il mipmapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Genera i mipmap
+	glGenerateMipmap(GL_TEXTURE_2D);
+
 	for (int i = 0; i < 8; i++)
 	{
 
@@ -778,7 +860,6 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 			mattoneSpeciale = glm::scale(mattoneSpeciale, glm::vec3(lunghezzaMattone, altezzaMattone, larghezzaMattone));
 			lightingShader->setMat4("model", mattoneSpeciale);
 
-			glBindVertexArray(cubeVAO);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
 			bool collision = controllaCollisioneMattoniOro(x,z);
@@ -795,6 +876,13 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 
 	}
 
+	// draw objects
+	blendingShader->use();
+	blendingShader->setInt("texture1", 0);
+	blendingShader->setMat4("projection", projection);
+	blendingShader->setMat4("view", view);
+
+	glBindVertexArray(cubeVAO);
 	//Disegno i mattoni da eliminare
 	for (int i = 0; i < 8; i++)
 	{
@@ -809,29 +897,108 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 				glm::mat4 model = glm::mat4(1.0f);	//identity matrix
 				model = glm::translate(model, glm::vec3(x, posYmattoni, z));
 				model = glm::scale(model, glm::vec3(lunghezzaMattone, altezzaMattone, larghezzaMattone));
-				lightingShader->setMat4("model", model);
 
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, specularMap);
 
-				if (j == 0) {
+				if (mapMattoni[i][j] == 5) {
+					lightingShader->use();
+					lightingShader->setMat4("model", model);
+					glActiveTexture(GL_TEXTURE1);
+					glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
+					// Abilita il mipmapping
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					// Genera i mipmap
+					glGenerateMipmap(GL_TEXTURE_2D);
+					//iron properties
+					lightingShader->setVec3("material.diffuse", 0.4f, 0.4f, 0.4f);
+					lightingShader->setVec3("material.specular", 0.774597f, 0.774597f, 0.774597f);
+					lightingShader->setFloat("material.shininess", 76.8f);
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, tx_ironDiffuse);
-				}else if(j == 1) {
+					// Abilita il mipmapping
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					// Genera i mipmap
+					glGenerateMipmap(GL_TEXTURE_2D);
+				}else if(mapMattoni[i][j] == 4) {
+					lightingShader->use();
+					lightingShader->setMat4("model", model);
+					glActiveTexture(GL_TEXTURE1);
+					glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
+					//copper properties
+					lightingShader->setVec3("material.diffuse", 0.5508f, 0.2118f, 0.066f);
+					lightingShader->setVec3("material.specular", 0.580594f, 0.223257f, 0.0695701f);
+					lightingShader->setFloat("material.shininess", 51.2f);
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, tx_copperDiffuse);
+					// Abilita il mipmapping
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					// Genera i mipmap
+					glGenerateMipmap(GL_TEXTURE_2D);
 				}
-				else if (j == 2) {
+				else if (mapMattoni[i][j] == 3) {
+					lightingShader->use();
+					lightingShader->setMat4("model", model);
+					glActiveTexture(GL_TEXTURE1);
+					glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
+					lightingShader->use();
+					//blue plastic properties
+					lightingShader->setVec3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+					lightingShader->setVec3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
+					lightingShader->setFloat("material.shininess", 32.0f);
 					glActiveTexture(GL_TEXTURE0);
-					glBindTexture(GL_TEXTURE_2D, tx_blackMetalDiffuse);
+					glBindTexture(GL_TEXTURE_2D, tx_bluePlastic);
+					// Abilita il mipmapping
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					// Genera i mipmap
+					glGenerateMipmap(GL_TEXTURE_2D);
 				}
-				else if (j == 3) {
+				else if (mapMattoni[i][j] == 2) {
+					lightingShader->use();
+					lightingShader->setMat4("model", model);
+					glActiveTexture(GL_TEXTURE1);
+					glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
+					//silver properties
+					lightingShader->setVec3("material.diffuse", 0.2775f, 0.2775f, 0.2775f);
+					lightingShader->setVec3("material.specular", 0.773911f, 0.773911f, 0.773911f);
+					lightingShader->setFloat("material.shininess", 89.6f);
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, tx_silverDiffuse);
+					// Abilita il mipmapping
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					// Genera i mipmap
+					glGenerateMipmap(GL_TEXTURE_2D);
 				}
-				else if (j == 4) {
+				else if (mapMattoni[i][j] == 1) {
+					lightingShader->use();
+					lightingShader->setMat4("model", model);
+					glActiveTexture(GL_TEXTURE1);
+					glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
+					//green plastic properties
+					lightingShader->setVec3("material.diffuse", 0.1f, 0.35f, 0.1f);
+					lightingShader->setVec3("material.specular", 0.45f, 0.55f, 0.45f);
+					lightingShader->setFloat("material.shininess", 32.0f);
 					glActiveTexture(GL_TEXTURE0);
-					glBindTexture(GL_TEXTURE_2D, tx_rustDiffuse);
+					glBindTexture(GL_TEXTURE_2D, tx_greenPlastic);
+					// Abilita il mipmapping
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					// Genera i mipmap
+					glGenerateMipmap(GL_TEXTURE_2D);
+				}
+				else if (mapMattoni[i][j] == 6) {
+					blendingShader->use();
+					blendingShader->setMat4("model", model);
+					glActiveTexture(GL_TEXTURE0);
+					glBindTexture(GL_TEXTURE_2D, transparentTexture);
+					// Abilita il mipmapping
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					// Genera i mipmap
+					glGenerateMipmap(GL_TEXTURE_2D);
 				}
 
 				glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -842,7 +1009,6 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 		}
 	}
 
-	glBindVertexArray(cubeVAO);
 }
 
 int main()
@@ -892,50 +1058,46 @@ int main()
 		return -1;
 	}
 
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	bordoShader = new Shader("vs_bordo.vs", "fs_bordo.fs");
-	mattoniShader = new Shader("vs_mattoni.vs", "fs_mattoni.fs");
 	piattaformaShader = new Shader("vs_piattaforma.vs", "fs_piattaforma.fs");
+	blendingShader = new Shader("blending.vs", "blending.fs");
 
 	Shader pallaShader("vs_palla.vs", "fs_palla.fs");
 
-	texture_mattoni = loadtexture("../src/bricks.jpg");
-	texture_mattoni_oro = loadtexture("../src/oro.jpg");
-	texture_piattaforma = loadtexture("../src/tiles.jpg");
+	texture_piattaforma = loadtexture("../src/tiles8.jpg");
 	texture_bordo = loadtexture("../src/tiles3.jpg");
-
 	texture_pavimento = loadtexture("../src/tiles5.jpg");
-	//tx_pavimento_specular = loadtexture("../src/tiles2_specualar.jpg");
-
 	texture_palla = loadtexture("../src/oro1.jpg");
 	texture_msgLost = loadtexture("../src/msgLost.jpg");
 	texture_msgWin = loadtexture("../src/msgWin.jpg");
 	texture_sfondo = loadtexture("../src/sfondo.jpg");
 
+	//Materiali
 	tx_goldDiffuse = loadtexture("../src/oro3.jpg");
-	//tx_goldSpecular = loadtexture("../src/specular2.jpg");
-
+	tx_goldSpecular = loadtexture("../src/gold_specular.jpg");
 	tx_ironDiffuse = loadtexture("../src/iron_diffuse.jpg");
-	tx_blackMetalDiffuse = loadtexture("../src/black_metal.jpg");
+	tx_bluePlastic = loadtexture("../src/plastica_blu.jpg");
 	tx_copperDiffuse = loadtexture("../src/copper_diffuse.jpg");
-	tx_rustDiffuse = loadtexture("../src/rust_diffuse.jpg");
+	tx_greenPlastic = loadtexture("../src/plastica_verde.jpg");
 	tx_silverDiffuse = loadtexture("../src/silver_diffuse.jpg");
+
+	//Trasparenza
+	transparentTexture = loadTexture("../src/window.png");
 
 	// load models
 	Model modelSfera("../src/sfera.obj");
 
 	//Luci
-	lightingShader = new Shader("color.vs", "color.fs");
-	lampShader = new Shader("lamp.vs", "lamp.fs");
-
-	diffuseMap = loadtexture("../src/container2.png");
-	specularMap = loadtexture("../src/container2_specular.png");
+	lightingShader = new Shader("point_light.vs", "point_light.fs");
 
 	//Binding per mattoni con texture diffuse e speculari
 	glGenVertexArrays(1, &cubeVAO);
 	glGenBuffers(1, &cubeVBO);
-
 	glBindVertexArray(cubeVAO);
-
 	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -949,22 +1111,8 @@ int main()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
-
-	glGenVertexArrays(1, &lightVAO);
-	glBindVertexArray(lightVAO);
-
-	// we only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need (it's already bound, but we do it again for educational purposes)
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
 	//Operazioni finali
 	glBindVertexArray(0);
-
-	glEnable(GL_DEPTH_TEST);
 
 	// create transformations
 	//glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
@@ -996,7 +1144,6 @@ int main()
 
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &cubeVAO);
-	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &cubeVBO);
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
