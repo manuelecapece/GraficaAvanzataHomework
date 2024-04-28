@@ -1,6 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <stack>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -14,8 +14,28 @@
 #include <iostream>
 #include <random>
 #include <cmath>
+#include <stack>
+
+#include <irrklang/irrKlang.h>
+#pragma comment(lib, "irrKlang.lib") 
 
 const float PI = 3.14159265358979323846;
+int playGameOver = 1;
+int playGameWin = 1;
+
+using namespace irrklang;
+
+ISoundEngine* soundEngine;
+ISoundSource* mainTheme;
+ISoundSource* rimbalzoMattoni;
+ISoundSource* rimbalzoMattoniOro;
+ISoundSource* rimbalzoBordo;
+ISoundSource* rimbalzoPiattaforma;
+ISoundSource* gameOver;
+ISoundSource* gameStart;
+ISoundSource* gameWin;
+ISound* ambientSound;
+
 
 
 // settings
@@ -280,6 +300,8 @@ void idle()
 	//Inizia il movimento della  palla
 	if (lanciaPalla && !stopLancio)
 	{
+		ISound* startGameSound = soundEngine->play2D(gameStart, false);
+
 		pallaAt = glm::vec3(random_x, 0.0f, -10.0f);
 		//pallaAt = glm::vec3(-10.0f, 0.0f, -10.0f);
 		pallaAt = glm::normalize(pallaAt);
@@ -477,6 +499,8 @@ void controllaCollisioneBordo(int i, int j, float x, float z) {
 
 	if (abs(x - pallaPos.x) <= dimCubo && abs(z - pallaPos.z) <= dimCubo) {
 
+		soundEngine->play2D(rimbalzoBordo, false);
+
 		glm::vec3 normale = getNormaleCuboBordo(i, j);
 
 		pallaAt = pallaAt - 2.0f * glm::dot(pallaAt, normale) * normale;
@@ -491,6 +515,8 @@ void controllaCollisioneMattoni(int i, int j, float x, float z) {
 	float rangeCollision = (larghezzaPalla + lunghezzaMattone) / 2;
 
 	if (abs(x - pallaPos.x) < rangeCollision && abs(z - pallaPos.z) < rangeCollision) {
+
+		soundEngine->play2D(rimbalzoMattoni, false);
 
 		mapMattoni[i][j] = 0;
 		cubiEliminati = cubiEliminati++;
@@ -516,6 +542,8 @@ bool controllaCollisioneMattoniOro(float x, float z) {
 
 	if (abs(x - pallaPos.x) < rangeCollision && abs(z - pallaPos.z) < rangeCollision) {
 
+		soundEngine->play2D(rimbalzoMattoniOro, false);
+
 		collision = true;
 
 		float random = generaNumeroCasuale(-0.25f, 0.25f);
@@ -540,6 +568,8 @@ void controllaCollisionePiattaforma() {
 	float rangeCollisionZ = ((larghezzaPalla + larghezzaPiattaforma) / 2 + 0.1);
 
 	if (deltaPosX <= rangeCollisionX && deltaPosZ <= rangeCollisionZ) {
+
+		soundEngine->play2D(rimbalzoPiattaforma, false);
 
 		float random = generaNumeroCasuale(-0.25f, 0.25f);
 
@@ -635,25 +665,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	pallaPos = pallaPos + translateSpeedPalla * pallaAt;
 	lightPos = pallaPos;
 
-	////Disegno la piattaforma
-	//piattaformaShader->use();
-	//piattaformaShader->setMat4("projection", projection);
-	//piattaformaShader->setMat4("view", view);
-	//glm::mat4 piattaforma = glm::mat4(1.0f);	//identity matrix
-	////std::cout << "posPiattaforma_x: " << posPiattaforma_x << std::endl;
-	//piattaforma = glm::translate(piattaforma, piattaformaPos);
-	//piattaforma = glm::scale(piattaforma, glm::vec3(lunghezzaPiattaforma, altezzaPiattaforma, larghezzaPiattaforma));
-	//piattaformaShader->setMat4("model", piattaforma);
-	//piattaformaShader->setInt("myTexture1", 1);
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, texture_piattaforma);
-	//// Abilita il mipmapping
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//// Genera i mipmap
-	//glGenerateMipmap(GL_TEXTURE_2D);
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
-
 	//Disegno il bordo
 	bordoShader->use();
 	bordoShader->setMat4("projection", projection);
@@ -691,6 +702,12 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 
 	//Mesaggio hai perso se la pallina supera la piattaforma
 	if (pallaPos.z > piattaformaPos.z + 2.0f) {
+		if (playGameOver == 1) {
+			ambientSound->stop();
+			ISound* gameOverSound = soundEngine->play2D(gameOver, false);
+			playGameOver = 0;
+		}
+		
 		speedPalla = 0;
 		//Sposto la camera
 		cameraPos = glm::vec3(0.0f, 20.0f, 1.8f);  // Posizione camera
@@ -713,6 +730,11 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 
 	//Mesaggio hai vinto se non sono rimasti cubi
 	if (cubiEliminati + mattoniSpecialiEliminati == 48) {
+		if (playGameWin == 1) {
+			ambientSound->stop();
+			ISound* gameWinSound = soundEngine->play2D(gameWin, false);
+			playGameWin = 0;
+		}
 		speedPalla = 0;
 		//Sposto la camera
 		cameraPos = glm::vec3(0.0f, 20.0f, 1.8f);  // Posizione camera
@@ -753,20 +775,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	// Genera i mipmap
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
-
-	//Disegno la palla (per ora e un cubo)
-	//modelShader->use();
-	//modelShader->setMat4("projection", projection);
-	//modelShader->setMat4("view", view);
-	//glm::mat4 modelPalla = glm::mat4(1.0f);	//identity matrix
-	//modelPalla = glm::translate(modelPalla, glm::vec3(pallaPos.x, pallaPos.y, pallaPos.z));
-	//modelPalla = glm::scale(modelPalla, glm::vec3(lunghezzaPalla, altezzaPalla, larghezzaPalla));
-	//modelShader->setMat4("model", modelPalla);
-	//modelShader->setVec3("colorcube", colors[0]);
-	//modelShader->setInt("myTexture1", 1);
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, texture_palla);
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno il modello 3D sfera
 	modelShader.use();
@@ -1031,11 +1039,23 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 
 int main()
 {
+
 	// glfw: initialize and configure
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	soundEngine = createIrrKlangDevice();
+	mainTheme = soundEngine->addSoundSourceFromFile("../src/music/soundtrack.mp3");
+	rimbalzoMattoni = soundEngine->addSoundSourceFromFile("../src/music/rimbalzoMattoni.wav");
+	rimbalzoMattoniOro = soundEngine->addSoundSourceFromFile("../src/music/rimbalzoMattoniOro.mp3");
+	rimbalzoPiattaforma = soundEngine->addSoundSourceFromFile("../src/music/rimbalzoPiattaforma.wav");
+	rimbalzoBordo = soundEngine->addSoundSourceFromFile("../src/music/rimbalzoBordo.mp3");
+	gameOver = soundEngine->addSoundSourceFromFile("../src/music/gameOver.mp3");
+	gameStart = soundEngine->addSoundSourceFromFile("../src/music/gameStart.mp3");
+	gameWin = soundEngine->addSoundSourceFromFile("../src/music/gameWin.mp3");
+	ambientSound = soundEngine->play2D(mainTheme, false, false, true);
 
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
@@ -1089,34 +1109,31 @@ int main()
 	//Luci
 	lightingShader = new Shader("point_light.vs", "point_light.fs");
 
-	texture_piattaforma = loadtexture("../src/marble.jpg");
-	texture_bordo = loadtexture("../src/tiles3.jpg");
+	texture_piattaforma = loadtexture("../src/textures/marble.jpg");
+	texture_bordo = loadtexture("../src/textures/tiles3.jpg");
 
-	texture_pavimento = loadTexture("../src/tiles5.jpg");
-	tx_pavimentoSpecular = loadTexture("../src/tiles5Specular.jpg");
+	texture_pavimento = loadTexture("../src/textures/tiles5.jpg");
 
-	texture_palla = loadtexture("../src/oro1.jpg");
-	texture_msgLost = loadtexture("../src/msgLost.jpg");
-	texture_msgWin = loadtexture("../src/msgWin.jpg");
-	texture_sfondo = loadtexture("../src/sfondo.jpg");
+	texture_palla = loadtexture("../src/textures/oro1.jpg");
+	texture_msgLost = loadtexture("../src/textures/msgLost.jpg");
+	texture_msgWin = loadtexture("../src/textures/msgWin.jpg");
+	texture_sfondo = loadtexture("../src/textures/sfondo.jpg");
 
 	//Materiali
-	tx_goldDiffuse = loadtexture("../src/oro3.jpg");
-	tx_goldSpecular = loadtexture("../src/pavimentoSpecular.jpg");
-	tx_ironDiffuse = loadtexture("../src/iron_diffuse.jpg");
-	tx_bluePlastic = loadtexture("../src/plastica_blu.jpg");
-	tx_copperDiffuse = loadtexture("../src/copper_diffuse.jpg");
-	tx_greenPlastic = loadtexture("../src/plastica_verde.jpg");
-	tx_silverDiffuse = loadtexture("../src/silver_diffuse.jpg");
+	tx_goldDiffuse = loadtexture("../src/textures/oro3.jpg");
+	tx_goldSpecular = loadtexture("../src/textures/pavimentoSpecular.jpg");
+	tx_ironDiffuse = loadtexture("../src/textures/iron_diffuse.jpg");
+	tx_bluePlastic = loadtexture("../src/textures/plastica_blu.jpg");
+	tx_copperDiffuse = loadtexture("../src/textures/copper_diffuse.jpg");
+	tx_greenPlastic = loadtexture("../src/textures/plastica_verde.jpg");
+	tx_silverDiffuse = loadtexture("../src/textures/silver_diffuse.jpg");
 
 	//Trasparenza
-	transparentTexture = loadTexture("../src/window.png");
+	transparentTexture = loadTexture("../src/textures/window.png");
 
 	// load models
-	Model modelSfera("../src/sfera.obj");
-
-	//Model modelPlatform("../src/backpack.obj");
-	Model modelPlatform("../src/platform/platform.obj");
+	Model modelSfera("../src/models/sfera.obj");
+	Model modelPlatform("../src/models/platform.obj");
 
 	//Binding per mattoni con texture diffuse e speculari
 	glGenVertexArrays(1, &cubeVAO);
