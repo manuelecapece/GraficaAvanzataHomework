@@ -15,6 +15,9 @@
 #include <random>
 #include <cmath>
 
+const float PI = 3.14159265358979323846;
+
+
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
@@ -122,8 +125,6 @@ glm::vec3 cameraSide(1.0, 0.0, 0.0);	// Direzione spostamento laterale
 unsigned int cubeVAO;
 unsigned int cubeVBO;
 
-Shader* lightingShader;
-
 // lighting
 glm::vec3 lightPos(-3.4, 0.0, 2.9);
 
@@ -179,6 +180,7 @@ bool exitGame = false;
 unsigned int texture_piattaforma;
 unsigned int texture_bordo;
 unsigned int texture_pavimento;
+unsigned int tx_pavimentoSpecular;
 unsigned int texture_palla;
 unsigned int texture_msgWin;
 unsigned int texture_msgLost;
@@ -204,6 +206,7 @@ unsigned int fps = 0;
 Shader* piattaformaShader;
 Shader* bordoShader;
 Shader* blendingShader;
+Shader* lightingShader;
 
 float random_x;
 
@@ -621,7 +624,7 @@ unsigned int loadtexture(std::string filename)
 	return texture;
 }
 
-void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
+void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model modelPlatform)
 {
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -632,24 +635,24 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 	pallaPos = pallaPos + translateSpeedPalla * pallaAt;
 	lightPos = pallaPos;
 
-	//Disegno la piattaforma
-	piattaformaShader->use();
-	piattaformaShader->setMat4("projection", projection);
-	piattaformaShader->setMat4("view", view);
-	glm::mat4 piattaforma = glm::mat4(1.0f);	//identity matrix
-	//std::cout << "posPiattaforma_x: " << posPiattaforma_x << std::endl;
-	piattaforma = glm::translate(piattaforma, glm::vec3(piattaformaPos.x, 0.0f, piattaformaPos.z));
-	piattaforma = glm::scale(piattaforma, glm::vec3(lunghezzaPiattaforma, altezzaPiattaforma, larghezzaPiattaforma));
-	piattaformaShader->setMat4("model", piattaforma);
-	piattaformaShader->setInt("myTexture1", 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture_piattaforma);
-	// Abilita il mipmapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Genera i mipmap
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	////Disegno la piattaforma
+	//piattaformaShader->use();
+	//piattaformaShader->setMat4("projection", projection);
+	//piattaformaShader->setMat4("view", view);
+	//glm::mat4 piattaforma = glm::mat4(1.0f);	//identity matrix
+	////std::cout << "posPiattaforma_x: " << posPiattaforma_x << std::endl;
+	//piattaforma = glm::translate(piattaforma, piattaformaPos);
+	//piattaforma = glm::scale(piattaforma, glm::vec3(lunghezzaPiattaforma, altezzaPiattaforma, larghezzaPiattaforma));
+	//piattaformaShader->setMat4("model", piattaforma);
+	//piattaformaShader->setInt("myTexture1", 1);
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, texture_piattaforma);
+	//// Abilita il mipmapping
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//// Genera i mipmap
+	//glGenerateMipmap(GL_TEXTURE_2D);
+	//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno il bordo
 	bordoShader->use();
@@ -752,27 +755,27 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno la palla (per ora e un cubo)
-	//pallaShader->use();
-	//pallaShader->setMat4("projection", projection);
-	//pallaShader->setMat4("view", view);
+	//modelShader->use();
+	//modelShader->setMat4("projection", projection);
+	//modelShader->setMat4("view", view);
 	//glm::mat4 modelPalla = glm::mat4(1.0f);	//identity matrix
 	//modelPalla = glm::translate(modelPalla, glm::vec3(pallaPos.x, pallaPos.y, pallaPos.z));
 	//modelPalla = glm::scale(modelPalla, glm::vec3(lunghezzaPalla, altezzaPalla, larghezzaPalla));
-	//pallaShader->setMat4("model", modelPalla);
-	//pallaShader->setVec3("colorcube", colors[0]);
-	//pallaShader->setInt("myTexture1", 1);
+	//modelShader->setMat4("model", modelPalla);
+	//modelShader->setVec3("colorcube", colors[0]);
+	//modelShader->setInt("myTexture1", 1);
 	//glActiveTexture(GL_TEXTURE1);
 	//glBindTexture(GL_TEXTURE_2D, texture_palla);
 	//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno il modello 3D sfera
-	pallaShader.use();
-	pallaShader.setMat4("projection", projection);
-	pallaShader.setMat4("view", view);
+	modelShader.use();
+	modelShader.setMat4("projection", projection);
+	modelShader.setMat4("view", view);
 	glm::mat4 modelSfera2 = glm::mat4(1.0f);
 	modelSfera2 = glm::translate(modelSfera2, glm::vec3(pallaPos.x, pallaPos.y, pallaPos.z + 0.15));
 	modelSfera2 = glm::scale(modelSfera2, glm::vec3(0.06f, 0.06f, 0.06f));
-	pallaShader.setMat4("model", modelSfera2);
+	modelShader.setMat4("model", modelSfera2);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_palla);
 	// Abilita il mipmapping
@@ -780,7 +783,22 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Genera i mipmap
 	glGenerateMipmap(GL_TEXTURE_2D);
-	modelSfera.Draw(pallaShader);
+	modelSfera.Draw(modelShader);
+
+	//Disegno il modello 3D piattaforma
+	glm::mat4 platform = glm::mat4(1.0f);
+	platform = glm::translate(platform, piattaformaPos);
+	platform = glm::scale(platform, glm::vec3(1.0f, 1.0f, 1.0f));
+	platform = glm::rotate(platform, -PI/2 , glm::vec3(1.0f, 0.0f, 0.0f));
+	modelShader.setMat4("model", platform);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture_piattaforma);
+	// Abilita il mipmapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Genera i mipmap
+	glGenerateMipmap(GL_TEXTURE_2D);
+	modelPlatform.Draw(modelShader);
 
 	//Disegno il pavimento
 
@@ -794,7 +812,7 @@ void render(glm::mat4 projection, Shader pallaShader, Model modelSfera)
 	lightingShader->setVec3("light.specular", 0.95f, 0.95f, 0.95f);
 	lightingShader->setFloat("light.constant", 1.0f);
 	lightingShader->setFloat("light.linear", 0.09f);
-	lightingShader->setFloat("light.quadratic", 0.032f);
+	lightingShader->setFloat("light.quadratic", 0.00f);
 
 	// material properties
 	lightingShader->setInt("material.diffuse", 0);
@@ -1066,11 +1084,17 @@ int main()
 	piattaformaShader = new Shader("vs_piattaforma.vs", "fs_piattaforma.fs");
 	blendingShader = new Shader("blending.vs", "blending.fs");
 
-	Shader pallaShader("vs_palla.vs", "fs_palla.fs");
+	Shader modelShader("vs_palla.vs", "fs_palla.fs");
 
-	texture_piattaforma = loadtexture("../src/tiles8.jpg");
+	//Luci
+	lightingShader = new Shader("point_light.vs", "point_light.fs");
+
+	texture_piattaforma = loadtexture("../src/marble.jpg");
 	texture_bordo = loadtexture("../src/tiles3.jpg");
-	texture_pavimento = loadtexture("../src/tiles5.jpg");
+
+	texture_pavimento = loadTexture("../src/tiles5.jpg");
+	tx_pavimentoSpecular = loadTexture("../src/tiles5Specular.jpg");
+
 	texture_palla = loadtexture("../src/oro1.jpg");
 	texture_msgLost = loadtexture("../src/msgLost.jpg");
 	texture_msgWin = loadtexture("../src/msgWin.jpg");
@@ -1078,7 +1102,7 @@ int main()
 
 	//Materiali
 	tx_goldDiffuse = loadtexture("../src/oro3.jpg");
-	tx_goldSpecular = loadtexture("../src/gold_specular.jpg");
+	tx_goldSpecular = loadtexture("../src/pavimentoSpecular.jpg");
 	tx_ironDiffuse = loadtexture("../src/iron_diffuse.jpg");
 	tx_bluePlastic = loadtexture("../src/plastica_blu.jpg");
 	tx_copperDiffuse = loadtexture("../src/copper_diffuse.jpg");
@@ -1091,8 +1115,8 @@ int main()
 	// load models
 	Model modelSfera("../src/sfera.obj");
 
-	//Luci
-	lightingShader = new Shader("point_light.vs", "point_light.fs");
+	//Model modelPlatform("../src/backpack.obj");
+	Model modelPlatform("../src/platform/platform.obj");
 
 	//Binding per mattoni con texture diffuse e speculari
 	glGenVertexArrays(1, &cubeVAO);
@@ -1132,7 +1156,7 @@ int main()
 		processInput(window);
 		idle();
 
-		render(projection,pallaShader, modelSfera);
+		render(projection,modelShader, modelSfera, modelPlatform);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
