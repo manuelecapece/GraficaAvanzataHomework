@@ -657,6 +657,8 @@ unsigned int loadtexture(std::string filename)
 
 void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model modelPlatform)
 {
+	//Inverto la direzione se la palla colpisce la piattaforma
+	controllaCollisionePiattaforma();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
@@ -757,9 +759,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
-
-	//Inverto la direzione se la palla colpisce la piattaforma
-	controllaCollisionePiattaforma();
 
 	//Disegno lo sfondo
 	bordoShader->use();
