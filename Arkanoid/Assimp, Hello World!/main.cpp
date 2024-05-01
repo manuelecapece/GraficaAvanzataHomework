@@ -39,8 +39,8 @@ ISound* ambientSound;
 
 
 // settings
-const unsigned int SCR_WIDTH = 1920;
-const unsigned int SCR_HEIGHT = 1080;
+int SCR_WIDTH = 1920;
+int SCR_HEIGHT = 1080;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -254,8 +254,11 @@ void calculateFPS() {
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void processInput(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || exitGame == true)
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || exitGame == true) {
 		glfwSetWindowShouldClose(window, true);
+		soundEngine->drop();
+	}
+		
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		moveLeft = true;
@@ -287,20 +290,18 @@ void idle()
 	if (moveRight && piattaformaPos.x < limX_pos)
 	{
 		piattaformaPos = glm::vec3(piattaformaPos.x + translateSpeedPiattaforma, piattaformaPos.y, piattaformaPos.z);
-		//posPiattaforma_x = posPiattaforma_x + translateSpeedPiattaforma;
 
 	}
 	// Spostamento piattaforma laterale sinistro
 	if (moveLeft && piattaformaPos.x > limX_neg)
 	{
-		//posPiattaforma_x = posPiattaforma_x - translateSpeedPiattaforma;
 		piattaformaPos = glm::vec3(piattaformaPos.x - translateSpeedPiattaforma, piattaformaPos.y, piattaformaPos.z);
 	}
 
 	//Inizia il movimento della  palla
 	if (lanciaPalla && !stopLancio)
 	{
-		ISound* startGameSound = soundEngine->play2D(gameStart, false);
+		soundEngine->play2D(gameStart, false);
 
 		pallaAt = glm::vec3(random_x, 0.0f, -10.0f);
 		//pallaAt = glm::vec3(-10.0f, 0.0f, -10.0f);
@@ -356,7 +357,7 @@ glm::vec3 getNormaleCuboBordo(int i, int j) {
 	return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-glm::vec3 getNormaleMattone(float x_cube, float z_cube) {
+glm::vec3 getNormaleMattone(float x_mattone, float z_mattone) {
 
 	//std::cout << "pallaAt_x " << pallaAt.x << std::endl;
 	//std::cout << "pallaAt_z " << pallaAt.z << std::endl;
@@ -364,44 +365,44 @@ glm::vec3 getNormaleMattone(float x_cube, float z_cube) {
 	//std::cout << "posPalla_x " << pallaPos.x << std::endl;
 	//std::cout << "posPalla_z " << pallaPos.z << std::endl;
 
-	//std::cout << "x_cube "   << x_cube << std::endl;
-	//std::cout << "z_cube "   << z_cube << std::endl;
+	//std::cout << "x_mattone "   << x_mattone << std::endl;
+	//std::cout << "z_mattone "   << z_mattone << std::endl;
 
-	float deltaPosX = abs(x_cube - pallaPos.x);
-	float deltaPosZ = abs(z_cube - pallaPos.z);
+	float deltaPosX = abs(x_mattone - pallaPos.x);
+	float deltaPosZ = abs(z_mattone - pallaPos.z);
 	float rangeCollisionX = (lunghezzaPalla + lunghezzaMattone) / 2;
 	float rangeCollisionZ = (larghezzaPalla + larghezzaMattone) / 2;
-	float x0_cube = x_cube - (lunghezzaMattone / 2 + lunghezzaPalla / 2 - 0.1);
-	float x1_cube = x_cube + (lunghezzaMattone / 2 + lunghezzaPalla / 2 - 0.1);
-	float z0_cube = z_cube - (larghezzaMattone / 2 + larghezzaPalla / 2 - 0.1);
-	float z1_cube = z_cube + (larghezzaMattone / 2 + larghezzaPalla / 2 - 0.1);
+	float x0_cube = x_mattone - (lunghezzaMattone / 2 + lunghezzaPalla / 2);
+	float x1_cube = x_mattone + (lunghezzaMattone / 2 + lunghezzaPalla / 2);
+	float z0_cube = z_mattone - (larghezzaMattone / 2 + larghezzaPalla / 2);
+	float z1_cube = z_mattone + (larghezzaMattone / 2 + larghezzaPalla / 2);
 
-	//La palla colpisce la faccia inferiore
-	if (pallaAt.z < 0 && deltaPosX <= rangeCollisionX && pallaPos.x > x0_cube && pallaPos.x < x1_cube) {
-		//speedPalla = 0;
-		//std::cout << "Hit face DOWN " << std::endl;
-		glm::vec3 normale = glm::vec3(0.0f, 0.0f, -1.0f);
-		return normale;
-	}
-	//La palla colpisce la faccia superiore
-	else if (pallaAt.z > 0 && deltaPosX <= rangeCollisionX && pallaPos.x > x0_cube && pallaPos.x < x1_cube) {
-		//speedPalla = 0;
-		//std::cout << "Hit face UP " << std::endl;
-		glm::vec3 normale = glm::vec3(0.0f, 0.0f, 1.0f);
-		return normale;
-	}
 	//La palla colpisce la faccia dx
-	else if (pallaAt.x < 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_cube && pallaPos.z < z1_cube) {
+	if (pallaAt.x < 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z >= z0_cube && pallaPos.z <= z1_cube) {
 		//speedPalla = 0;
 		//std::cout << "Hit face DX " << std::endl;
 		glm::vec3 normale = glm::vec3(1.0f, 0.0f, 0.0f);
 		return normale;
 	}
 	//La palla colpisce la faccia sx
-	else if (pallaAt.x > 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z > z0_cube && pallaPos.z < z1_cube) {
+	else if (pallaAt.x > 0 && deltaPosZ <= rangeCollisionZ && pallaPos.z >= z0_cube && pallaPos.z <= z1_cube) {
 		//speedPalla = 0;
 		//std::cout << "Hit face SX " << std::endl;
 		glm::vec3 normale = glm::vec3(-1.0f, 0.0f, 0.0f);
+		return normale;
+	}
+	//La palla colpisce la faccia inferiore
+	else if (pallaAt.z < 0 && deltaPosX <= rangeCollisionX && pallaPos.x >= x0_cube && pallaPos.x <= x1_cube) {
+		//speedPalla = 0;
+		//std::cout << "Hit face DOWN " << std::endl;
+		glm::vec3 normale = glm::vec3(0.0f, 0.0f, -1.0f);
+		return normale;
+	}
+	//La palla colpisce la faccia superiore
+	else if (pallaAt.z > 0 && deltaPosX <= rangeCollisionX && pallaPos.x >= x0_cube && pallaPos.x <= x1_cube) {
+		//speedPalla = 0;
+		//std::cout << "Hit face UP " << std::endl;
+		glm::vec3 normale = glm::vec3(0.0f, 0.0f, 1.0f);
 		return normale;
 	}
 	//La palla colpisce lo spigolo
@@ -410,7 +411,7 @@ glm::vec3 getNormaleMattone(float x_cube, float z_cube) {
 		//float random_x = generaNumeroCasuale(-1.0f, 1.0f);
 		//float random_z = generaNumeroCasuale(-1.0f, 1.0f);
 		//glm::vec3 normale = glm::vec3(random_x, 0.0f, random_z);
-
+		//return normale;
 		//La palla colpisce lo spigolo in alto a DX
 		if (pallaAt.x < 0 && pallaAt.z > 0) {
 			//std::cout << "Hit SPIGOLO alto DX " << std::endl;
@@ -426,13 +427,13 @@ glm::vec3 getNormaleMattone(float x_cube, float z_cube) {
 		//La palla colpisce lo spigolo in basso a DX
 		if (pallaAt.x < 0 && pallaAt.z < 0) {
 			//std::cout << "Hit SPIGOLO basso DX " << std::endl;
-			glm::vec3 normale = glm::vec3(-1.0f, 0.0f, -1.0f);
+			glm::vec3 normale = glm::vec3(1.0f, 0.0f, -1.0f);
 			return normale;
 		}
 		//La palla colpisce lo spigolo in basso a SX
 		if (pallaAt.x > 0 && pallaAt.z < 0) {
 			//std::cout << "Hit SPIGOLO basso SX " << std::endl;
-			glm::vec3 normale = glm::vec3(1.0f, 0.0f, -1.0f);
+			glm::vec3 normale = glm::vec3(-1.0f, 0.0f, -1.0f);
 			return normale;
 		}
 	}
@@ -704,7 +705,8 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	if (pallaPos.z > piattaformaPos.z + 2.0f) {
 		if (playGameOver == 1) {
 			ambientSound->stop();
-			ISound* gameOverSound = soundEngine->play2D(gameOver, false);
+			soundEngine->play2D(gameOver, false);
+			
 			playGameOver = 0;
 		}
 		
@@ -732,7 +734,7 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	if (cubiEliminati + mattoniSpecialiEliminati == 48) {
 		if (playGameWin == 1) {
 			ambientSound->stop();
-			ISound* gameWinSound = soundEngine->play2D(gameWin, false);
+			soundEngine->play2D(gameWin, false);
 			playGameWin = 0;
 		}
 		speedPalla = 0;
@@ -775,6 +777,19 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	// Genera i mipmap
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	////Disegno la palla (per ora e un cubo)
+	//bordoShader->use();
+	//bordoShader->setMat4("projection", projection);
+	//bordoShader->setMat4("view", view);
+	//glm::mat4 modelPalla = glm::mat4(1.0f);	//identity matrix
+	//modelPalla = glm::translate(modelPalla, glm::vec3(pallaPos.x, pallaPos.y, pallaPos.z));
+	//modelPalla = glm::scale(modelPalla, glm::vec3(lunghezzaPalla, altezzaPalla, larghezzaPalla));
+	//bordoShader->setMat4("model", modelPalla);
+	//bordoShader->setInt("myTexture1", 1);
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, texture_palla);
+	//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno il modello 3D sfera
 	modelShader.use();
@@ -1052,8 +1067,8 @@ int main()
 	rimbalzoMattoniOro = soundEngine->addSoundSourceFromFile("../src/music/rimbalzoMattoniOro.mp3");
 	rimbalzoPiattaforma = soundEngine->addSoundSourceFromFile("../src/music/rimbalzoPiattaforma.wav");
 	rimbalzoBordo = soundEngine->addSoundSourceFromFile("../src/music/rimbalzoBordo.mp3");
-	gameOver = soundEngine->addSoundSourceFromFile("../src/music/gameOver.mp3");
-	gameStart = soundEngine->addSoundSourceFromFile("../src/music/gameStart.mp3");
+	gameOver = soundEngine->addSoundSourceFromFile("../src/music/gameOver.wav");
+	gameStart = soundEngine->addSoundSourceFromFile("../src/music/gameStart.wav");
 	gameWin = soundEngine->addSoundSourceFromFile("../src/music/gameWin.mp3");
 	ambientSound = soundEngine->play2D(mainTheme, false, false, true);
 
@@ -1062,17 +1077,15 @@ int main()
 #endif
 
 	//Decommentare per schermo intero
-	/*
-	// settings
-	// Ottenere il monitor primario
-	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+	
+	//// Ottenere il monitor primario
+	//GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+	//// Ottenere la modalita video corrente del monitor primario
+	//const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
 
-	// Ottenere la modalita video corrente del monitor primario
-	const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
-
-	SCR_WIDTH = videoMode->width;
-	SCR_HEIGHT = videoMode->height;
-	*/
+	//SCR_WIDTH = videoMode->width;
+	//SCR_HEIGHT = videoMode->height;
+	
 
 	// glfw window creation
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL 3.3 - Arkanoid!", NULL, NULL);
@@ -1083,9 +1096,7 @@ int main()
 	}
 
 	// Impostare la finestra in modalita schermo intero
-	/*
-	glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, videoMode->width, videoMode->height, videoMode->refreshRate);
-	*/
+	//glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, videoMode->width, videoMode->height, videoMode->refreshRate);
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
