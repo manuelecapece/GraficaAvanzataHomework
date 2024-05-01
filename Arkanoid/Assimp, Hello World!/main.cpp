@@ -158,7 +158,7 @@ glm::vec3 pallaUp(0.0, 1.0, 0.0); // Vettore up...la palla e sempre parallela al
 const float lunghezzaPalla = 0.3f;
 const float larghezzaPalla = 0.3f;
 const float altezzaPalla = 0.3f;
-float speedPalla = 7; // velocita della sfera
+float speedPalla = 6.5; // velocita della sfera
 float translateSpeedPalla;
 
 //Proprieta cubi bordo,pavimento 
@@ -178,7 +178,7 @@ const float posZmattoniOro = posZmattoni - 1.0 * larghezzaMattone;
 glm::vec3 piattaformaPos(-3.4, 0.0, 3.7);
 float translateRight = 0;
 float translateLeft = 0;
-float speedPiattaforma = 6.5;  // velocita della piattaforma
+float speedPiattaforma = 6;  // velocita della piattaforma
 const float lunghezzaPiattaforma = 2.0f;
 const float larghezzaPiattaforma = 0.4f;
 const float altezzaPiattaforma = 1.0f;
@@ -285,6 +285,10 @@ void idle()
 
 	translateSpeedPiattaforma = speedPiattaforma * deltaTime;
 	translateSpeedPalla = speedPalla * deltaTime;
+
+	//Definisco la posizione della palla
+	pallaPos = pallaPos + translateSpeedPalla * pallaAt;
+	lightPos = pallaPos;
 
 	// Spostamento piattaforma laterale destro
 	if (moveRight && piattaformaPos.x < limX_pos)
@@ -657,29 +661,19 @@ unsigned int loadtexture(std::string filename)
 
 void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model modelPlatform)
 {
-	//Inverto la direzione se la palla colpisce la piattaforma
-	controllaCollisionePiattaforma();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-	glm::mat4 view = glm::lookAt(cameraPos, cameraAt, cameraUp);
-
-	//Definisco la posizione della palla
-	pallaPos = pallaPos + translateSpeedPalla * pallaAt;
-	lightPos = pallaPos;
 
 	//Disegno il bordo
 	bordoShader->use();
-	bordoShader->setMat4("projection", projection);
-	bordoShader->setMat4("view", view);
-	bordoShader->setInt("myTexture1", 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_bordo);
-	// Abilita il mipmapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Genera i mipmap
-	glGenerateMipmap(GL_TEXTURE_2D);
+	//// Abilita il mipmapping
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//// Genera i mipmap
+	//glGenerateMipmap(GL_TEXTURE_2D);
 	for (int i = 0; i < 14; i++)
 	{
 		for (int j = 0; j < 15; j++)
@@ -716,19 +710,16 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 		//Sposto la camera
 		cameraPos = glm::vec3(0.0f, 20.0f, 1.8f);  // Posizione camera
 		cameraAt = glm::vec3(0.0f, 20.0f, 0.0f);	// Punto in cui "guarda" la camera
+		glm::mat4 view = glm::lookAt(cameraPos, cameraAt, cameraUp);
 		bordoShader->use();
+		bordoShader->setMat4("view", view);
 		glm::mat4 modelDialogBox = glm::mat4(1.0f);	//identity matrix
 		modelDialogBox = glm::translate(modelDialogBox, glm::vec3(0.0f, 20.0f, 0.0f));
-		modelDialogBox = glm::scale(modelDialogBox, glm::vec3(1.0f, 1.0f, 1.0f));
+		modelDialogBox = glm::scale(modelDialogBox, glm::vec3(1.2f, 1.2f, 1.2f));
 		bordoShader->setMat4("model", modelDialogBox);
 		bordoShader->setInt("myTexture1", 1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture_msgLost);
-		// Abilita il mipmapping
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		// Genera i mipmap
-		glGenerateMipmap(GL_TEXTURE_2D);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
@@ -743,20 +734,16 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 		//Sposto la camera
 		cameraPos = glm::vec3(0.0f, 20.0f, 1.8f);  // Posizione camera
 		cameraAt = glm::vec3(0.0f, 20.0f, -1.0f);	// Punto in cui "guarda" la camera
+		glm::mat4 view = glm::lookAt(cameraPos, cameraAt, cameraUp);
 		bordoShader->use();
-
+		bordoShader->setMat4("view", view);
 		glm::mat4 modelDialogBox = glm::mat4(1.0f);	//identity matrix
 		modelDialogBox = glm::translate(modelDialogBox, glm::vec3(0.0f, 20.0f, 0.0f));
-		modelDialogBox = glm::scale(modelDialogBox, glm::vec3(1.0f, 1.0f, 1.0f));
+		modelDialogBox = glm::scale(modelDialogBox, glm::vec3(1.2f, 1.2f, 1.2f));
 		bordoShader->setMat4("model", modelDialogBox);
 		bordoShader->setInt("myTexture1", 1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture_msgWin);
-		// Abilita il mipmapping
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		// Genera i mipmap
-		glGenerateMipmap(GL_TEXTURE_2D);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
@@ -767,14 +754,8 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	modelCuboSfondo = glm::rotate(modelCuboSfondo, -45.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	modelCuboSfondo = glm::scale(modelCuboSfondo, glm::vec3(55.0f, 55.0f, 0.1f));
 	bordoShader->setMat4("model", modelCuboSfondo);
-	bordoShader->setInt("myTexture1", 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_sfondo);
-	// Abilita il mipmapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Genera i mipmap
-	glGenerateMipmap(GL_TEXTURE_2D);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	////Disegno la palla (per ora e un cubo)
@@ -792,19 +773,12 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 
 	//Disegno il modello 3D sfera
 	modelShader.use();
-	modelShader.setMat4("projection", projection);
-	modelShader.setMat4("view", view);
 	glm::mat4 modelSfera2 = glm::mat4(1.0f);
 	modelSfera2 = glm::translate(modelSfera2, glm::vec3(pallaPos.x, pallaPos.y, pallaPos.z + 0.15));
 	modelSfera2 = glm::scale(modelSfera2, glm::vec3(0.06f, 0.06f, 0.06f));
 	modelShader.setMat4("model", modelSfera2);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_palla);
-	// Abilita il mipmapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Genera i mipmap
-	glGenerateMipmap(GL_TEXTURE_2D);
 	modelSfera.Draw(modelShader);
 
 	//Disegno il modello 3D piattaforma
@@ -815,11 +789,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	modelShader.setMat4("model", platform);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_piattaforma);
-	// Abilita il mipmapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Genera i mipmap
-	glGenerateMipmap(GL_TEXTURE_2D);
 	modelPlatform.Draw(modelShader);
 
 	//Disegno il pavimento
@@ -841,14 +810,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	lightingShader->setInt("material.specular", 1);
 	lightingShader->setFloat("material.shininess", 32.0f);
 
-	// view/projection transformations
-	lightingShader->setMat4("projection", projection);
-	lightingShader->setMat4("view", view);
-
-	blendingShader->setMat4("projection", projection);
-	blendingShader->setMat4("view", view);
-	blendingShader->setInt("texture1", 0);
-
 	// world transformation
 	glm::mat4 pavimento = glm::mat4(1.0f);	//identity matrix
 	pavimento = glm::translate(pavimento, glm::vec3(-3.5f, -1.0f, -3.0f));
@@ -863,11 +824,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
 	//Disegno il pavimento
 	glBindVertexArray(cubeVAO);
-	// Abilita il mipmapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Genera i mipmap
-	glGenerateMipmap(GL_TEXTURE_2D);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//Disegno i mattoni di oro (con due vite)
@@ -879,11 +835,7 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 	glBindTexture(GL_TEXTURE_2D, tx_goldDiffuse);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
-	// Abilita il mipmapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Genera i mipmap
-	glGenerateMipmap(GL_TEXTURE_2D);
+
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -891,7 +843,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 		if (vecMattoniOro[i] != 0)
 		{
 
-			/* Ogni cubo dista 1.1 unita dai vicini */
 			float x = posXmattoni + i * lunghezzaMattone * spazioMattoni;
 			float z = posZmattoniOro - 0.05f;
 
@@ -916,14 +867,8 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 
 	}
 
-	// draw objects
-	blendingShader->use();
-	blendingShader->setInt("texture1", 0);
-	blendingShader->setMat4("projection", projection);
-	blendingShader->setMat4("view", view);
-
-	glBindVertexArray(cubeVAO);
 	//Disegno i mattoni da eliminare
+	glBindVertexArray(cubeVAO);
 	for (int i = 0; i < 8; i++)
 	{
 		for (int j = 0; j < 5; j++)
@@ -944,22 +889,12 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 					lightingShader->setMat4("model", model);
 					glActiveTexture(GL_TEXTURE1);
 					glBindTexture(GL_TEXTURE_2D, tx_goldSpecular);
-					// Abilita il mipmapping
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-					// Genera i mipmap
-					glGenerateMipmap(GL_TEXTURE_2D);
 					//iron properties
 					lightingShader->setVec3("material.diffuse", 0.4f, 0.4f, 0.4f);
 					lightingShader->setVec3("material.specular", 0.774597f, 0.774597f, 0.774597f);
 					lightingShader->setFloat("material.shininess", 76.8f);
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, tx_ironDiffuse);
-					// Abilita il mipmapping
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-					// Genera i mipmap
-					glGenerateMipmap(GL_TEXTURE_2D);
 				}else if(mapMattoni[i][j] == 4) {
 					lightingShader->use();
 					lightingShader->setMat4("model", model);
@@ -971,11 +906,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 					lightingShader->setFloat("material.shininess", 51.2f);
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, tx_copperDiffuse);
-					// Abilita il mipmapping
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-					// Genera i mipmap
-					glGenerateMipmap(GL_TEXTURE_2D);
 				}
 				else if (mapMattoni[i][j] == 3) {
 					lightingShader->use();
@@ -989,11 +919,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 					lightingShader->setFloat("material.shininess", 32.0f);
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, tx_bluePlastic);
-					// Abilita il mipmapping
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-					// Genera i mipmap
-					glGenerateMipmap(GL_TEXTURE_2D);
 				}
 				else if (mapMattoni[i][j] == 2) {
 					lightingShader->use();
@@ -1006,11 +931,6 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 					lightingShader->setFloat("material.shininess", 89.6f);
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, tx_silverDiffuse);
-					// Abilita il mipmapping
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-					// Genera i mipmap
-					glGenerateMipmap(GL_TEXTURE_2D);
 				}
 				else if (mapMattoni[i][j] == 1) {
 					lightingShader->use();
@@ -1023,22 +943,12 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 					lightingShader->setFloat("material.shininess", 32.0f);
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, tx_greenPlastic);
-					// Abilita il mipmapping
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-					// Genera i mipmap
-					glGenerateMipmap(GL_TEXTURE_2D);
 				}
 				else if (mapMattoni[i][j] == 6) {
 					blendingShader->use();
 					blendingShader->setMat4("model", model);
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, transparentTexture);
-					// Abilita il mipmapping
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-					// Genera i mipmap
-					glGenerateMipmap(GL_TEXTURE_2D);
 				}
 
 				glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -1048,11 +958,14 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 
 		}
 	}
-
+	//Inverto la direzione se la palla colpisce la piattaforma
+	controllaCollisionePiattaforma();
 }
 
 int main()
 {
+	bool schermoIntero = false;
+	const GLFWvidmode* videoMode = NULL;
 
 	// glfw: initialize and configure
 	glfwInit();
@@ -1069,22 +982,20 @@ int main()
 	gameOver = soundEngine->addSoundSourceFromFile("../src/music/gameOver.wav");
 	gameStart = soundEngine->addSoundSourceFromFile("../src/music/gameStart.wav");
 	gameWin = soundEngine->addSoundSourceFromFile("../src/music/gameWin.mp3");
-	ambientSound = soundEngine->play2D(mainTheme, false, false, true);
+	ambientSound = soundEngine->play2D(mainTheme, true, false, true);
 
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 #endif
 
-	//Decommentare per schermo intero
-	
-	//// Ottenere il monitor primario
-	//GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
-	//// Ottenere la modalita video corrente del monitor primario
-	//const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
-
-	//SCR_WIDTH = videoMode->width;
-	//SCR_HEIGHT = videoMode->height;
-	
+	if (schermoIntero) {
+		// Ottenere il monitor primario
+		GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+		// Ottenere la modalita video corrente del monitor primario
+		videoMode = glfwGetVideoMode(primaryMonitor);
+		SCR_WIDTH = videoMode->width;
+		SCR_HEIGHT = videoMode->height;
+	}
 
 	// glfw window creation
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL 3.3 - Arkanoid!", NULL, NULL);
@@ -1094,8 +1005,10 @@ int main()
 		return -1;
 	}
 
-	// Impostare la finestra in modalita schermo intero
-	//glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, videoMode->width, videoMode->height, videoMode->refreshRate);
+	if (schermoIntero) {
+		// Impostare la finestra in modalita schermo intero
+		glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, videoMode->width, videoMode->height, videoMode->refreshRate);
+	}
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -1169,12 +1082,32 @@ int main()
 	//glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
 	glm::mat4 projection = glm::mat4(1.0f);	//identity matrix
 	projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	glm::mat4 view = glm::lookAt(cameraPos, cameraAt, cameraUp);
 
 	// Genera un numero casuale float tra -12 e 12
 	random_x = generaNumeroCasualeStart(-6.0f, 6.0f);
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
+	bordoShader->use();
+	bordoShader->setMat4("projection", projection);
+	bordoShader->setMat4("view", view);
+	bordoShader->setInt("myTexture1", 1);
+
+	modelShader.use();
+	modelShader.setMat4("projection", projection);
+	modelShader.setMat4("view", view);
+
+	lightingShader->use();
+	lightingShader->setMat4("projection", projection);;
+	lightingShader->setMat4("view", view);
+
+	blendingShader->use();
+	blendingShader->setMat4("projection", projection);
+	blendingShader->setMat4("view", view);
+	blendingShader->setInt("texture1", 0);
 
 	// render loop
 	while (!glfwWindowShouldClose(window))
