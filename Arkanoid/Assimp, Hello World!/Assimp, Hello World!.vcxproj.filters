@@ -46,6 +46,12 @@
     <None Include="blending.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="text.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="text.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -66,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render_text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

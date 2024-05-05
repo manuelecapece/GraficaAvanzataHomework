@@ -172,6 +172,8 @@
     <None Include="fs_palla.fs" />
     <None Include="fs_piattaforma.fs" />
     <None Include="packages.config" />
+    <None Include="text.fs" />
+    <None Include="text.vs" />
     <None Include="vs_bordo.vs" />
     <None Include="vs_palla.vs" />
     <None Include="vs_piattaforma.vs" />
@@ -184,6 +186,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="render_text.h" />
     <ClInclude Include="shader_m.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

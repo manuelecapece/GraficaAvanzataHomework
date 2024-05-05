@@ -19,6 +19,9 @@
 #include <irrklang/irrKlang.h>
 #pragma comment(lib, "irrKlang.lib") 
 
+//#include "render_text.h"
+
+
 const float PI = 3.14159265358979323846;
 int playGameOver = 1;
 int playGameWin = 1;
@@ -964,7 +967,7 @@ void render(glm::mat4 projection, Shader modelShader, Model modelSfera, Model mo
 
 int main()
 {
-	bool schermoIntero = false;
+	bool schermoIntero = true;
 	const GLFWvidmode* videoMode = NULL;
 
 	// glfw: initialize and configure
@@ -1018,6 +1021,7 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
+
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
