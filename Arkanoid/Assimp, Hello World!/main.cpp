@@ -1130,10 +1130,11 @@ int main()
 		return -1;
 	}
 
-
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//glEnable(GL_CULL_FACE);
 
 	bordoShader = new Shader("bordo.vs", "bordo.fs");
 	blendingShader = new Shader("blending.vs", "blending.fs");
@@ -1178,7 +1179,7 @@ int main()
 	Model modelSfera("../src/models/sfera.obj");
 	Model modelPlatform("../src/models/platform/piattaforma.obj");
 
-	// configure (floating point) framebuffers
+// configure (floating point) framebuffers
 // ---------------------------------------
 	glGenFramebuffers(1, &hdrFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
@@ -1230,7 +1231,6 @@ int main()
 			std::cout << "Framebuffer not complete!" << std::endl;
 	}
 
-
 	//Binding per mattoni con texture diffuse e speculari
 	glGenVertexArrays(1, &cubeVAO);
 	glGenBuffers(1, &cubeVBO);
@@ -1250,7 +1250,6 @@ int main()
 
 	//Operazioni finali
 	glBindVertexArray(0);
-
 
 	// create transformations
 	//glm::mat4 view = glm::mat4(1.0f);	//identity matrix;
