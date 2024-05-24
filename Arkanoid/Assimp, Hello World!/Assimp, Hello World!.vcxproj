@@ -166,17 +166,23 @@
   <ItemGroup>
     <None Include="blending.fs" />
     <None Include="blending.vs" />
-    <None Include="point_light.fs" />
-    <None Include="point_light.vs" />
-    <None Include="fs_bordo.fs" />
-    <None Include="fs_palla.fs" />
-    <None Include="fs_piattaforma.fs" />
+    <None Include="bloom_final.fs" />
+    <None Include="bloom_final.vs" />
+    <None Include="blur.fs" />
+    <None Include="blur.vs" />
+    <None Include="pavimento.vs" />
+    <None Include="pavimento.fs" />
+    <None Include="mattoni.fs" />
+    <None Include="mattoni.vs" />
+    <None Include="bordo.fs" />
+    <None Include="palla.fs" />
     <None Include="packages.config" />
+    <None Include="piattaforma.fs" />
+    <None Include="piattaforma.vs" />
     <None Include="text.fs" />
     <None Include="text.vs" />
-    <None Include="vs_bordo.vs" />
-    <None Include="vs_palla.vs" />
-    <None Include="vs_piattaforma.vs" />
+    <None Include="bordo.vs" />
+    <None Include="palla.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />

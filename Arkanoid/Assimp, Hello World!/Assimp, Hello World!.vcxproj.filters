@@ -16,28 +16,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="vs_piattaforma.vs">
+    <None Include="palla.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="vs_palla.vs">
+    <None Include="bordo.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="vs_bordo.vs">
+    <None Include="bordo.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="fs_bordo.fs">
+    <None Include="palla.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="fs_palla.fs">
+    <None Include="mattoni.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="fs_piattaforma.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="point_light.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="point_light.fs">
+    <None Include="mattoni.fs">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="blending.fs">
@@ -50,6 +44,30 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="text.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="pavimento.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="pavimento.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="piattaforma.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="piattaforma.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="blur.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="blur.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="bloom_final.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="bloom_final.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
