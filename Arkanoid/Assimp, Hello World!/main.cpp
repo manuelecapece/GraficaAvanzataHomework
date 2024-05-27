@@ -210,7 +210,6 @@ bool lanciaPalla = false;
 bool stopLancio = false;
 bool exitGame = false;
 
-unsigned int texture_piattaforma;
 unsigned int texture_bordo;
 unsigned int texture_palla;
 unsigned int texture_msgWin;
@@ -1151,7 +1150,6 @@ int main()
 	Shader shaderBloomFinal("bloom_final.vs", "bloom_final.fs");
 
 	//Textures
-	texture_piattaforma = loadTexture3("../src/textures/marble.jpg",true);
 	texture_bordo = loadTexture3("../src/textures/tiles3.jpg", true);
 
 	texture_palla = loadTexture3("../src/textures/oro1.jpg",true);
@@ -1161,11 +1159,11 @@ int main()
 
 	pavimentoDiffuse = loadTexture3("../src/textures/paving.jpg",true);
 	pavimentoNormal = loadTexture3("../src/textures/paving_normal.jpg",true);
-	pavimentoSpecular = loadTexture3("../src/textures/brickwall_specular.jpg",true);
+	pavimentoSpecular = loadTexture3("../src/textures/paving_specular.jpg",true);
 
 	//Materiali
 	tx_goldDiffuse = loadTexture3("../src/textures/oro3.jpg",true);
-	tx_goldSpecular = loadTexture3("../src/textures/pavimentoSpecular.jpg",true);
+	tx_goldSpecular = loadTexture3("../src/textures/paving_specular.jpg",true);
 	tx_ironDiffuse = loadTexture3("../src/textures/iron_diffuse.jpg",true);
 	tx_bluePlastic = loadTexture3("../src/textures/plastica_blu.jpg",true);
 	tx_copperDiffuse = loadTexture3("../src/textures/copper_diffuse.jpg",true);
